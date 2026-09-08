@@ -1,0 +1,2155 @@
+{
+  "title": "UC1 Learning Platform",
+  "subtitle": "Kurikulum Fundamental Deep Learning + Proyek UC1 (HF Radar Currents) — MMS-2 P3 BMKG",
+  "cutoff": "Draft Report Issue 3.0 (12/06/2026)",
+  "modules": [
+    {
+      "id": "f01",
+      "track": "fundamentals",
+      "title": "F1. ML vs aturan fisik — kenapa AI untuk arus?",
+      "goal": "Memahami perbedaan model fisik/NWP dan machine learning, serta kenapa UC1 memakai pendekatan data-driven.",
+      "sections": [
+        {
+          "heading": "Dua cara memprediksi fenomena laut",
+          "body": [
+            "Model fisik / NWP: persamaan dinamika dipecahkan di komputer (butuh kondisi awal, gaya, parameterisasi). Kuat di proses yang dipahami fisika, mahal secara komputasi, dan bisa meleset jika data/skala lokal kurang.",
+            "Machine learning (ML): belajar pola dari contoh data historis (input → output). Tidak “mengerti” fisika secara eksplisit, tetapi bisa meniru hubungan yang berulang di observasi.",
+            "Deep learning (DL) = ML dengan jaringan saraf berlapis-banyak, cocok untuk pola rumit di waktu dan ruang (seperti field arus HF Radar).",
+            "Analogi kasar: model fisik seperti mensimulasikan aturan main bola dari hukum gerak; ML seperti menonton ribuan pertandingan lalu menebak skor dari pola statistik — keduanya berguna, beda kekuatan."
+          ]
+        },
+        {
+          "heading": "Kenapa relevan untuk UC1",
+          "body": [
+            "HF Radar memberi observasi arus padat, tetapi ada gap. Kita punya sejarah: saat kondisi tide/angin/SSH seperti X, arus sering seperti Y.",
+            "UC1 memakai DL (+ baseline analogue) untuk mengisi gap dan forecast ~24 jam dari pola historis — melengkapi, bukan mengganti, pengetahuan oseanografi BMKG.",
+            "Baseline analogue (modul U8) adalah jembatan: metode “cari situasi mirip” yang lebih mudah diinterpretasi sebelum masuk jaringan dalam."
+          ]
+        },
+        {
+          "heading": "Yang BUKAN klaim UC1",
+          "body": [
+            "AI tidak otomatis menggantikan radar atau model oseanografi operasional yang sudah ada.",
+            "Tanpa data berkualitas dan evaluasi jujur (split temporal + metrik fisik), model DL bisa terlihat bagus di kertas tetapi gagal di lapangan."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f01q1",
+          "q": "Deep learning pada intinya adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "ML dengan jaringan saraf berlapis banyak"
+            },
+            {
+              "value": "b",
+              "label": "Hanya spreadsheet Excel"
+            },
+            {
+              "value": "c",
+              "label": "Persamaan Navier–Stokes murni tanpa data"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f01q2",
+          "q": "UC1 memakai AI terutama untuk…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Belajar pola dari data observasi (gap-fill + forecast)"
+            },
+            {
+              "value": "b",
+              "label": "Menghapus semua stasiun radar"
+            },
+            {
+              "value": "c",
+              "label": "Mengganti BMKG dengan robot tanpa data"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f02",
+      "track": "fundamentals",
+      "title": "F2. Supervised learning: input, fitur, target",
+      "goal": "Menguasai kosakata supervised learning dan memetakannya ke contoh UC1.",
+      "sections": [
+        {
+          "heading": "Istilah inti",
+          "body": [
+            "Supervised learning: kita punya pasangan contoh (X, y). Model belajar memprediksi y dari X.",
+            "Input / features (X): informasi yang diberikan ke model (mis. tide, angin, arus masa lalu, SSH).",
+            "Target / label (y): jawaban yang ingin diprediksi (mis. field arus U/V di waktu mendatang atau saat gap).",
+            "Satu contoh training = satu “momen” di masa lalu di mana X dan y keduanya diketahui dari data."
+          ]
+        },
+        {
+          "heading": "Analogi UC1",
+          "body": [
+            "X: lookback arus + tide + angin + gradien SSH (+ batimetri sebagai konteks spasial).",
+            "y: arus pada lead time tertentu (atau rekonstruksi saat gap).",
+            "Model yang bagus: untuk X baru (hari ini), menghasilkan y yang dekat observasi (jika ada) atau masuk akal secara oseanografi."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f02q1",
+          "q": "Dalam supervised learning, target adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Nilai yang ingin diprediksi (label y)"
+            },
+            {
+              "value": "b",
+              "label": "Nama file komputer saja"
+            },
+            {
+              "value": "c",
+              "label": "Learning rate"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f02q2",
+          "q": "Contoh fitur UC1 yang valid?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Tide dan past currents"
+            },
+            {
+              "value": "b",
+              "label": "Warna logo BMKG"
+            },
+            {
+              "value": "c",
+              "label": "Nomor tiket cuti pegawai"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f03",
+      "track": "fundamentals",
+      "title": "F3. Jaringan saraf: neuron, layer, forward pass",
+      "goal": "Memahami intuisi jaringan saraf tanpa harus menurunkan rumus.",
+      "sections": [
+        {
+          "heading": "Neuron & layer",
+          "body": [
+            "Neuron buatan: menerima angka-angka, mengalikan dengan bobot (weights), menambah bias, lalu melewati fungsi aktivasi (mis. ReLU) agar bisa belajar pola non-linear.",
+            "Layer = kumpulan neuron. Deep = banyak layer bertumpuk. Layer awal menangkap pola sederhana; layer dalam menangkap kombinasi yang lebih abstrak.",
+            "MLP (multi-layer perceptron): semua neuron terhubung penuh ke layer berikutnya — cocok untuk vektor fitur, kurang alami untuk grid spasial panjang waktu.",
+            "Bayangkan tiap neuron sebagai “detektor pola kecil”. Susunan banyak detektor memungkinkan model mengenali pola arus yang rumit tanpa kita menulis rumusnya manual."
+          ]
+        },
+        {
+          "heading": "Forward pass",
+          "body": [
+            "Forward pass: data X masuk dari layer pertama sampai output prediksi ŷ. Ini “tebakan” model saat ini.",
+            "Bobot awal biasanya acak → tebakan jelek. Belajar = mengubah bobot agar ŷ mendekati y.",
+            "Di UC1, ŷ biasanya field atau komponen arus; X adalah kumpulan fitur lookback. Forward pass dijalankan jutaan kali selama training."
+          ]
+        },
+        {
+          "heading": "Apa yang perlu Anda ingat",
+          "body": [
+            "Anda tidak harus menurunkan turunan berantai di atas kertas untuk memakai model — framework menghitungnya.",
+            "Yang penting: arsitektur menentukan jenis pola yang mudah dipelajari (sequence → LSTM; grid waktu→ ConvLSTM)."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f03q1",
+          "q": "Forward pass berarti…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Menghitung prediksi dari input melalui layer"
+            },
+            {
+              "value": "b",
+              "label": "Menghapus dataset training"
+            },
+            {
+              "value": "c",
+              "label": "Mematikan GPU"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f03q2",
+          "q": "Fungsi aktivasi membantu model…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Belajar hubungan non-linear"
+            },
+            {
+              "value": "b",
+              "label": "Menyimpan PDF report"
+            },
+            {
+              "value": "c",
+              "label": "Mengganti HF Radar"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f04",
+      "track": "fundamentals",
+      "title": "F4. Loss, backpropagation, gradient descent",
+      "goal": "Mengerti bagaimana model “belajar” dari kesalahan prediksi.",
+      "sections": [
+        {
+          "heading": "Loss = ukuran kesalahan",
+          "body": [
+            "Loss function membandingkan prediksi ŷ dengan target y (contoh: MSE / RMSE untuk regresi arus).",
+            "Loss kecil → prediksi dekat target (pada data yang diukur). Loss besar → model masih jelek pada data itu."
+          ]
+        },
+        {
+          "heading": "Backprop & gradient descent (intuisi)",
+          "body": [
+            "Backpropagation: menghitung seberapa “bersalah” tiap bobot terhadap loss (gradien).",
+            "Gradient descent: geser bobot sedikit lawan arah gradien agar loss turun — diulang berkali-kali.",
+            "Learning rate: seberapa besar langkah geser. Terlalu besar = goyang/tidak konvergen; terlalu kecil = belajar sangat lambat.",
+            "Anda tidak wajib menghitung turunan manual; framework (PyTorch) yang menghitungnya."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f04q1",
+          "q": "Loss function mengukur…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Seberapa jauh prediksi dari target"
+            },
+            {
+              "value": "b",
+              "label": "Suhu ruang server saja"
+            },
+            {
+              "value": "c",
+              "label": "Jumlah slide presentasi"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f04q2",
+          "q": "Learning rate yang terlalu besar cenderung…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Training tidak stabil / sulit konvergen"
+            },
+            {
+              "value": "b",
+              "label": "Selalu menghasilkan RMSE nol"
+            },
+            {
+              "value": "c",
+              "label": "Menghapus tide dari input"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f05",
+      "track": "fundamentals",
+      "title": "F5. Epoch, batch, dan siklus training",
+      "goal": "Memahami satu putaran training praktis yang akan Anda lihat di log/MLflow.",
+      "sections": [
+        {
+          "heading": "Batch & epoch",
+          "body": [
+            "Batch: sekelompok contoh yang diproses sekaligus sebelum update bobot. Mini-batch menyeimbangkan kecepatan dan stabilitas.",
+            "Epoch: satu kali model melihat seluruh data training (dalam banyak batch).",
+            "Satu siklus tipikal: ambil batch → forward → hitung loss → backprop → update bobot → ulangi."
+          ]
+        },
+        {
+          "heading": "Yang Anda pantau",
+          "body": [
+            "Kurva loss training vs validation per epoch. Idealnya keduanya turun, validation tidak naik lagi sementara training terus turun (gejala overfitting).",
+            "Di UC1 nanti: Anda akan melihat training LSTM/ConvLSTM dengan strategi berbeda — konsep epoch/batch tetap sama."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f05q1",
+          "q": "Satu epoch artinya…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Satu kali model melewati seluruh data training"
+            },
+            {
+              "value": "b",
+              "label": "Satu file PDF report"
+            },
+            {
+              "value": "c",
+              "label": "Satu stasiun radar saja"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f05q2",
+          "q": "Mini-batch dipakai agar…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Update bobot efisien dan relatif stabil"
+            },
+            {
+              "value": "b",
+              "label": "Data tide dihapus otomatis"
+            },
+            {
+              "value": "c",
+              "label": "Radar tidak perlu kalibrasi"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f06",
+      "track": "fundamentals",
+      "title": "F6. Train / validation / test & data leakage",
+      "goal": "Memahami pemisahan data dan kesalahan klasik yang merusak evaluasi — kritis untuk time series UC1.",
+      "sections": [
+        {
+          "heading": "Tiga potongan data",
+          "body": [
+            "Training: untuk belajar bobot.",
+            "Validation: untuk menyetel hyperparameter / early stopping (bukan untuk skor final).",
+            "Test: evaluasi jujur sekali di akhir — jangan dipakai bolak-balik untuk tuning."
+          ]
+        },
+        {
+          "heading": "Leakage & jenis split",
+          "body": [
+            "Data leakage: informasi dari masa depan atau dari test “bocor” ke training → skor palsu bagus.",
+            "Random split: acak — berbahaya untuk data berurutan waktu (masa depan bisa bocor ke past).",
+            "Temporal split: potong menurut waktu (latih masa lalu, uji masa depan) — yang dipakai UC1.",
+            "Spatial split: pisah wilayah — relevan jika generalisasi antar lokasi menjadi tujuan."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f06q1",
+          "q": "Untuk forecast arus, split yang paling tepat biasanya…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Temporal split"
+            },
+            {
+              "value": "b",
+              "label": "Acak total tanpa hormati waktu"
+            },
+            {
+              "value": "c",
+              "label": "Pakai test set untuk training"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f06q2",
+          "q": "Data leakage membuat…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Metrik terlihat bagus secara menipu"
+            },
+            {
+              "value": "b",
+              "label": "Radar otomatis lebih akurat di lapangan"
+            },
+            {
+              "value": "c",
+              "label": "Tide FES menjadi satelit"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f07",
+      "track": "fundamentals",
+      "title": "F7. Overfitting, underfitting, baca kurva training",
+      "goal": "Mengenali kesehatan training dari perilaku loss — skill yang dipakai di FT “Understanding training behaviour”.",
+      "sections": [
+        {
+          "heading": "Dua penyakit klasik",
+          "body": [
+            "Underfitting: model terlalu sederhana / belum cukup belajar — training & validation loss sama-sama tinggi.",
+            "Overfitting: model “menghafal” training — training loss rendah, validation/test jelek.",
+            "Penyebab overfitting umum: model terlalu kompleks, data sedikit, training terlalu lama, tidak ada regularisasi."
+          ]
+        },
+        {
+          "heading": "Respons praktis",
+          "body": [
+            "Coba: lebih banyak data / augmentasi yang valid, early stopping, model lebih sederhana, regularisasi, cek learning rate.",
+            "Di UC1: data gap dan lookback membatasi contoh valid — overfitting jadi risiko nyata; baseline analogue membantu patokan."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f07q1",
+          "q": "Gejala overfitting tipikal?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Train bagus, validation jelek"
+            },
+            {
+              "value": "b",
+              "label": "Train dan validation sama-sama sempurna selalu"
+            },
+            {
+              "value": "c",
+              "label": "Model tidak pernah melihat data"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f07q2",
+          "q": "Underfitting berarti…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Model belum menangkap pola (error tinggi)"
+            },
+            {
+              "value": "b",
+              "label": "Model sudah produksi nasional"
+            },
+            {
+              "value": "c",
+              "label": "Semua metrik Lagrangian sempurna"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f08",
+      "track": "fundamentals",
+      "title": "F8. Sequence models: dari MLP ke LSTM",
+      "goal": "Mengerti kenapa prediksi arus butuh “memori waktu”, dan intuisi LSTM sebelum masuk arsitektur UC1.",
+      "sections": [
+        {
+          "heading": "Masalah urutan waktu",
+          "body": [
+            "Arus sekarang bergantung pada kondisi sebelumnya (tide, arus kemarin, angin). Urutan penting — bukan sekadar tas fitur acak.",
+            "RNN (recurrent): punya state tersembunyi yang membawa ringkasan masa lalu ke langkah berikutnya.",
+            "Masalah RNN klasik: sulit mengingat jangka panjang (vanishing gradient). LSTM dirancang agar memori panjang lebih stabil (cell state + gates)."
+          ]
+        },
+        {
+          "heading": "LSTM dalam bahasa sehari-hari",
+          "body": [
+            "Bayangkan catatan kecil yang di-update tiap jam: gate memutuskan apa yang dilupakan, apa yang ditulis, apa yang dibaca untuk prediksi.",
+            "UC1 memakai LSTM sebagai salah satu arsitektur — cocok saat input diperlakukan sebagai sequence, tetapi field spasial penuh lebih alami di ConvLSTM."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f08q1",
+          "q": "LSTM membantu terutama karena…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Menangani dependensi temporal / memori urutan"
+            },
+            {
+              "value": "b",
+              "label": "Mengganti batimetri dengan emoji"
+            },
+            {
+              "value": "c",
+              "label": "Menghapus kebutuhan data training"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f08q2",
+          "q": "Kenapa MLP polos kurang ideal untuk forecast arus panjang?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Tidak punya struktur memori waktu bawaan"
+            },
+            {
+              "value": "b",
+              "label": "Tidak bisa dijalankan di CPU sama sekali"
+            },
+            {
+              "value": "c",
+              "label": "Hanya untuk klasifikasi gambar kucing"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f09",
+      "track": "fundamentals",
+      "title": "F9. Grid spasial: CNN → ConvLSTM & attention",
+      "goal": "Menghubungkan intuisi citra/grid ke field arus HF Radar dan ide attention.",
+      "sections": [
+        {
+          "heading": "CNN untuk pola ruang",
+          "body": [
+            "CNN memakai filter lokal yang bergeser di grid — menangkap pola spasial (tetangga pixel saling terkait).",
+            "Field arus U/V di radar = “peta” 2D per waktu. Pola spasial (jet di selat, gradien dekat pantai) cocok diproses konvolusi."
+          ]
+        },
+        {
+          "heading": "ConvLSTM & attention",
+          "body": [
+            "ConvLSTM: menggabungkan konvolusi (ruang) dengan memori LSTM (waktu) — arsitektur inti UC1 untuk field spatiotemporal.",
+            "Temporal attention: setelah sequence diproses, model memberi bobot lebih besar ke timestep yang paling relevan sebelum membuat prediksi.",
+            "Anda belum perlu menghafal rumus; yang penting: ConvLSTM = ruang+waktu; attention = fokus selektif ke momen penting."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f09q1",
+          "q": "ConvLSTM menggabungkan…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Pola spasial (conv) + memori temporal (LSTM)"
+            },
+            {
+              "value": "b",
+              "label": "Hanya administrasi surat menyurat"
+            },
+            {
+              "value": "c",
+              "label": "Pasut astronomis tanpa data"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f09q2",
+          "q": "Temporal attention berguna untuk…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Memberi bobot pada timestep yang relevan"
+            },
+            {
+              "value": "b",
+              "label": "Menghapus semua data angin"
+            },
+            {
+              "value": "c",
+              "label": "Mengganti HF Radar dengan webcam"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "f10",
+      "track": "fundamentals",
+      "title": "F10. Metrik dasar, strategi prediksi waktu, & tooling",
+      "goal": "Menyiapkan fondasi metrik/strategi training + mengenal Lightning, Kedro, MLflow sebelum modul UC1.",
+      "sections": [
+        {
+          "heading": "Metrik regresi & skill",
+          "body": [
+            "RMSE / MAE: rata-rata besar kesalahan (satuan sama dengan arus). Lebih kecil biasanya lebih baik.",
+            "Metrik vektor: tidak hanya U dan V terpisah, tetapi kekuatan & arah arus.",
+            "Skill score (mis. Lagrangian NCLS di UC1): membandingkan kualitas relatif (sering vs referensi/baseline), bukan hanya error absolut."
+          ]
+        },
+        {
+          "heading": "Strategi horizon waktu (intuisi)",
+          "body": [
+            "One-pass: langsung prediksi ke +24 jam dari lookback — sederhana, sulit untuk horizon jauh.",
+            "Iterative: prediksi langkah pendek berulang — fleksibel, error bisa menumpuk.",
+            "Auto-regressive: saat training, model juga belajar dari prediksinya sendiri — lebih siap untuk rollout panjang.",
+            "Residual: prediksi perubahan (delta), bukan seluruh field absolut — sering lebih stabil."
+          ]
+        },
+        {
+          "heading": "Tooling FT (pengenalan)",
+          "body": [
+            "PyTorch Lightning: merapikan loop training (LightningModule, Trainer, DataModule).",
+            "Kedro: struktur pipeline proyek ML (nodes, pipelines, config) agar reproducible.",
+            "MLflow: mencatat eksperimen (parameter, metrik, artefak) — menjawab “run mana yang terbaik?”."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "f10q1",
+          "q": "MLflow terutama membantu…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Melacak dan membandingkan eksperimen"
+            },
+            {
+              "value": "b",
+              "label": "Mengukur kedalaman laut langsung"
+            },
+            {
+              "value": "c",
+              "label": "Mengganti Draft Report"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "f10q2",
+          "q": "Risiko utama prediksi iterative?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Akumulasi error tiap langkah"
+            },
+            {
+              "value": "b",
+              "label": "Tidak bisa memakai tide"
+            },
+            {
+              "value": "c",
+              "label": "Selalu overfitting sempurna"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u01",
+      "track": "uc1",
+      "title": "U1. Orientasi MMS-2 P3 & posisi UC1",
+      "goal": "Memahami konteks proyek MMS-2 P3, mitra CLS, dan nilai transformasi UC1 bagi layanan maritim BMKG.",
+      "sections": [
+        {
+          "heading": "Apa itu MMS-2 P3 dan Lot 4-B1?",
+          "body": [
+            "UC1 adalah salah satu AI Use Case di kerangka BMKG Strategic Transformation — MMS-2 Paket 3 (Big Data and AI Use Cases), Lot 4-B1.",
+            "Mitra teknis utama adalah CLS. Dokumen acuan utama modul ini adalah UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN, 12 Juni 2026).",
+            "Paket ini membangun kemampuan Modelling System yang memanfaatkan big data dan AI, bukan sekadar laporan analisis sekali jalan.",
+            "Sebelum modul proyek ini, Anda diharapkan sudah menyelesaikan jalur fundamental F1–F10 agar istilah loss, epoch, LSTM, dan split data tidak asing."
+          ]
+        },
+        {
+          "heading": "Nilai transformasi untuk BMKG",
+          "body": [
+            "Observasi HF Radar memberi field arus permukaan yang padat, tetapi sering putus (gap) karena teknis, lingkungan, atau komunikasi.",
+            "UC1 mengubah data yang terputus-putus menjadi kemampuan estimasi arus saat gap dan forecast operasional berbasis AI.",
+            "Dampak layanan: informasi arus yang lebih kontinu di selat strategis untuk navigasi, operasi maritim, dan dukungan pencarian-penyelamatan.",
+            "AI di sini melengkapi pengetahuan oseanografi BMKG, bukan mengganti radar atau model fisik sepenuhnya."
+          ]
+        },
+        {
+          "heading": "Cakupan geografis & produk yang dituju",
+          "body": [
+            "Area fokus: Selat Sunda (situs Bada) dan Selat Lombok (situs Sega) — wilayah cakupan HF Radar yang relevan operasional.",
+            "Produk inti: field komponen arus U dan V pada grid radar, untuk gap-filling dan prediksi ke depan.",
+            "Resolusi target yang dipakai dalam studi: spasial sekitar 1 km dan temporal 10 menit (setelah periode resolusi radar distabilkan).",
+            "Lead time operasional yang dirancang: mengisi gap beberapa hari bila memungkinkan, serta forecast sekitar 24 jam."
+          ]
+        },
+        {
+          "heading": "Cara membaca status proyek di Issue 3.0",
+          "body": [
+            "Issue 3.0 mendokumentasikan fondasi: ekstraksi, analisis, preprocessing, baseline analogue, kerangka metrik, serta arsitektur dan strategi training DL.",
+            "Bagian Results analysis, unit/non-regression tests, dan automatic pipeline di Issue 3.0 masih kosong — jangan mengklaim skor model final.",
+            "Factory Training AI UCs September 2026 adalah rencana penguatan kapasitas (data → model/metrik → produksi), bukan bukti bahwa UC1 sudah selesai produksi.",
+            "Sepanjang kurikulum, gunakan cut-off fakta 12 Juni 2026 kecuali Anda secara sadar membaca dokumen yang lebih baru."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u01q1",
+          "q": "UC1 berada di kerangka mana?",
+          "options": [
+            {
+              "value": "a",
+              "label": "MMS-2 P3 Big Data & AI Use Cases (Lot 4-B1) bersama CLS"
+            },
+            {
+              "value": "b",
+              "label": "Proyek gempa bumi mandiri tanpa mitra"
+            },
+            {
+              "value": "c",
+              "label": "Hanya pelatihan Excel internal"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u01q2",
+          "q": "Dokumen cut-off fakta utama untuk kurikulum ini adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "UC1 Draft Report Issue 3.0 (12 Juni 2026)"
+            },
+            {
+              "value": "b",
+              "label": "Proposal tahun 2010 tanpa nomor dokumen"
+            },
+            {
+              "value": "c",
+              "label": "Artikel berita tanpa referensi teknis"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u01q3",
+          "q": "Manakah pernyataan yang benar tentang Issue 3.0?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Results analysis kuantitatif model masih kosong"
+            },
+            {
+              "value": "b",
+              "label": "Semua pipeline produksi sudah selesai 100%"
+            },
+            {
+              "value": "c",
+              "label": "Radar HF sudah diganti sepenuhnya oleh satelit"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u02",
+      "track": "uc1",
+      "title": "U2. Definisi masalah UC1",
+      "goal": "Menjelaskan problem statement, area, lead time, resolusi, dan output yang harus dipelajari model.",
+      "sections": [
+        {
+          "heading": "Problem statement dalam satu kalimat",
+          "body": [
+            "Masalah UC1: bagaimana mengestimasi field arus HF Radar saat terjadi gap, dan meramal arus ke depan hingga sekitar 24 jam?",
+            "Ini adalah tugas supervised learning spatiotemporal: dari sejarah observasi + variabel pendukung, prediksi U dan V di grid.",
+            "Gap-filling dan forecast saling terkait: keduanya butuh representasi dinamika arus lokal yang konsisten di ruang dan waktu.",
+            "Tanpa solusi ini, layanan informasi arus di Sunda/Lombok mudah terputus meski infrastruktur radar sudah ada."
+          ]
+        },
+        {
+          "heading": "Spesifikasi area, resolusi, dan lead time",
+          "body": [
+            "Area studi: Selat Sunda dan Selat Lombok sesuai cakupan radar (kotak koordinat didefinisikan dari densitas observasi valid).",
+            "Resolusi kerja: spasial ~1 km (grid radar ~0.009°) dan temporal 10 menit pada periode studi utama.",
+            "Forecast target operasional: 24 jam. Gap yang perlu diisi bisa berlangsung beberapa hari, tetapi gap kecil di preprocessing diperlakukan berbeda dari gap panjang.",
+            "Output: komponen arus U (timur–barat) dan V (utara–selatan) — atau representasi DS/CS setelah transformasi — pada field grid radar."
+          ]
+        },
+        {
+          "heading": "Kenapa ini cocok untuk DL setelah F1–F10?",
+          "body": [
+            "Ada pasangan input–target berlimpah dari histori radar: pola berulang tide, angin, dan arus dapat dipelajari dari data.",
+            "Dependensi temporal panjang cocok dengan LSTM; pola spasial field cocok dengan ConvLSTM / CNN.",
+            "Baseline non-DL (analogue/KNN) tetap penting sebagai patokan sebelum mengklaim keunggulan jaringan dalam.",
+            "Evaluasi harus fisik: error di grid (Eulerian) dan dampak pada lintasan partikel (Lagrangian), bukan hanya loss training."
+          ]
+        },
+        {
+          "heading": "Batasan yang harus diingat sejak awal",
+          "body": [
+            "Model belajar dari observasi; jika kualitas radar buruk atau bias sistematis, prediksi bisa mewarisi masalah itu.",
+            "Forecast jauh ke depan lebih sulit karena ketidakpastian dan non-linearitas dinamika meningkat.",
+            "Issue 3.0 sudah merancang arsitektur dan metrik, tetapi belum mengisi Results analysis — jadi fokus dulu pada pemahaman masalah, bukan skor final.",
+            "Keputusan variabel (satu titik vs grid, tide FES vs AWS) datang dari diskusi BMKG–CLS dan analisis data, bukan dari intuisi semata."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u02q1",
+          "q": "Area studi utama UC1 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Selat Sunda dan Selat Lombok"
+            },
+            {
+              "value": "b",
+              "label": "Hanya Samudra Atlantik"
+            },
+            {
+              "value": "c",
+              "label": "Seluruh ZEE tanpa data radar"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u02q2",
+          "q": "Lead time forecast yang menjadi target operasional UC1 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Sekitar 24 jam"
+            },
+            {
+              "value": "b",
+              "label": "Tepat 10 tahun ke depan"
+            },
+            {
+              "value": "c",
+              "label": "Hanya 1 detik"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u02q3",
+          "q": "Output model UC1 yang dimaksud adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Field komponen arus U dan V pada grid radar"
+            },
+            {
+              "value": "b",
+              "label": "Hanya teks berita cuaca"
+            },
+            {
+              "value": "c",
+              "label": "Gambar logo institusi"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u03",
+      "track": "uc1",
+      "title": "U3. Domain oseanografi singkat",
+      "goal": "Memahami driver arus (ITF, monsun, tidal/non-tidal, CS/DS) yang memengaruhi fitur dan evaluasi UC1.",
+      "sections": [
+        {
+          "heading": "Selat strategis dan konteks ITF",
+          "body": [
+            "Selat Sunda dan Lombok menghubungkan Laut Jawa dengan Samudra Hindia; Lombok khususnya merupakan jalur penting Indonesian Throughflow (ITF).",
+            "Arus di sini bukan “acak”: ada sinyal skala besar (ITF/monsun) yang berinteraksi dengan geometri selat dan pasang surut lokal.",
+            "Oleh karena itu model AI perlu fitur yang menangkap gaya besar (misalnya gradien SSH utara–selatan) sekaligus dinamika lokal (tide, past currents).",
+            "Memahami domain membantu Anda menilai apakah prediksi model masuk akal secara fisik, bukan hanya menurunkan loss."
+          ]
+        },
+        {
+          "heading": "Monsun dan pola musiman di radar",
+          "body": [
+            "Analisis Issue 3.0 membagi musim menurut pola angin: monsun Australia (Des–Feb), transisi (Mar–Mei), monsun Asia (Jun–Agu), dan transisi (Sep–Nov).",
+            "Dari rose plot, aliran paling sering Maret–November cenderung dari Laut Jawa ke Samudra Hindia (arah barat daya).",
+            "Pada monsun Australia terjadi pembalikan pola dominan ke arah timur laut di kedua selat.",
+            "Sunda cenderung lebih “stream-like” (arah lebih koheren); Lombok lebih kompleks karena morfologi (termasuk pengaruh Nusa Penida yang membagi cabang aliran)."
+          ]
+        },
+        {
+          "heading": "Tidal vs non-tidal",
+          "body": [
+            "Komponen tidal: osilasi periodik terkait pasang surut; sering mendominasi variabilitas jangka pendek di banyak selat.",
+            "Komponen non-tidal: sisa setelah sinyal tide disaring — terkait angin, gradien tekanan/SSH, dan proses yang lebih lambat.",
+            "Di UC1, dekomposisi memakai filter berdasarkan analisis Power Spectral Density (PSD) agar cutoff selaras frekuensi dominan.",
+            "Memisahkan tidal/non-tidal membantu menguji korelasi fisik yang “tertutup” oleh sinyal tide yang kuat."
+          ]
+        },
+        {
+          "heading": "Transformasi Cross-stream (CS) dan Downstream (DS)",
+          "body": [
+            "U/V adalah basis geografis. CS/DS memutar basis mengikuti sumbu aliran utama selat.",
+            "DS = komponen sepanjang aliran utama; CS = komponen tegak lurus (menyebar/berputar ke samping).",
+            "Issue 3.0 memilih sudut rotasi dari median orientasi arus radar (bukan hanya tebak dari batimetri), karena lebih relevan ilmiah dan distribusi DS lebih lebar.",
+            "Representasi CS/DS dipakai lanjut di analisis distribusi, korelasi, dan interpretasi fitur."
+          ]
+        },
+        {
+          "heading": "Prioritas evaluasi menurut BMKG",
+          "body": [
+            "Prioritas utama: kekuatan/arus (magnitude) — seberapa kuat aliran diprediksi.",
+            "Berikutnya: arah dan variabilitas waktu — apakah pola berubah masuk akal sepanjang hari/musim.",
+            "Struktur eddy relatif kurang diprioritaskan dalam keputusan evaluasi operasional yang disampaikan ke tim.",
+            "Prioritas ini memandu pilihan metrik (misalnya RMSE norm, akurasi berbasis ambang) dan cara membaca hasil eksperimen nanti."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u03q1",
+          "q": "CS/DS dalam UC1 berarti…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Cross-stream dan Downstream setelah rotasi sumbu aliran"
+            },
+            {
+              "value": "b",
+              "label": "Cloud Storage dan Data Server"
+            },
+            {
+              "value": "c",
+              "label": "Celsius dan Decibel saja"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u03q2",
+          "q": "Prioritas evaluasi BMKG yang digarisbawahi untuk UC1 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Kekuatan arus dulu, lalu arah & variabilitas waktu"
+            },
+            {
+              "value": "b",
+              "label": "Hanya visual eddy seindah mungkin"
+            },
+            {
+              "value": "c",
+              "label": "Mengabaikan magnitude sama sekali"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u03q3",
+          "q": "PSD (Power Spectral Density) dipakai untuk…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Melihat frekuensi dominan agar cutoff tidal/non-tidal masuk akal"
+            },
+            {
+              "value": "b",
+              "label": "Mengukur daya listrik kantor"
+            },
+            {
+              "value": "c",
+              "label": "Menghapus semua data tide"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u04",
+      "track": "uc1",
+      "title": "U4. Input–output & keputusan variabel BMKG–CLS",
+      "goal": "Menguasai daftar input/output UC1 dan alasan keputusan variabel setelah misi Jakarta.",
+      "sections": [
+        {
+          "heading": "Daftar input yang dipakai pipeline",
+          "body": [
+            "Past currents dari HF Radar (komponen U/V atau CS/DS) — sinyal paling langsung untuk gap-fill/forecast.",
+            "Tide: model FES2022 (dan perbandingan dengan harmonik stasiun AWS).",
+            "Angin: komponen dari ERA5 reanalysis.",
+            "Oceanografi: SST, SSH, SSS dari model global (CMEMS/Mercator); SST tambahan dari Ostia; plus batimetri lokal (BATNAS).",
+            "Gradien SSH utara–selatan (Laut Jawa → Samudra Hindia) diusulkan/diperkuat sebagai fitur dinamis lintas selat."
+          ]
+        },
+        {
+          "heading": "Output model",
+          "body": [
+            "Output: field arus U dan V (atau setara CS/DS) pada cakupan mask radar yang valid.",
+            "Prediksi bisa berupa satu lead time tetap atau rangkaian langkah hingga horizon 24 jam, tergantung strategi training.",
+            "Setelah prediksi, denormalisasi diperlukan agar nilai kembali ke satuan fisik (m/s atau cm/s) untuk metrik dan visualisasi.",
+            "Produk akhir yang relevan operasional adalah peta arus yang kontinu saat gap dan proyeksi jangka pendek."
+          ]
+        },
+        {
+          "heading": "Keputusan penting setelah misi BMKG (Jakarta)",
+          "body": [
+            "Variasi spasial beberapa variabel (angin, SST/SSH/SSS) di area studi relatif rendah dibanding resolusi radar, sehingga interpolasi grid sangat halus tidak selalu perlu.",
+            "Saran praktis: ekstraksi satu titik per variabel/area, dipilih jauh dari pantai dan memaksimalkan variansi temporal.",
+            "Untuk angin, titik dipilih mempertimbangkan arah angin dominan (SW di Sunda, SE di Lombok) dan jarak dari daratan.",
+            "Gradien SSH dihitung dari dua titik (utara Laut Jawa dan selatan Samudra Hindia) dibagi jarak haversine — menangkap “dorongan” lintas selat."
+          ]
+        },
+        {
+          "heading": "Tide: FES vs AWS dan peran skala",
+          "body": [
+            "FES2022 dipilih setelah cek quality flag: model terdefinisi di kedua selat; sebagian besar titik berkualitas interpolasi.",
+            "Perbandingan harmonik AWS vs FES: korelasi sangat tinggi di Sunda (~0.99) dengan MAE kecil; di Lombok korelasi sedikit lebih rendah dan MAE lebih besar.",
+            "Intuisi fisik: model global/reanalisis menangkap variabilitas musiman/skala besar; tide lokal menangkap osilasi skala selat.",
+            "Keputusan variabel final tetap diverifikasi lewat korelasi, SHAP, dan eksperimen bertahap — bukan daftar tetap tanpa uji."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u04q1",
+          "q": "Saran BMKG untuk oseanografi/angin di area studi adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Satu titik per area (jauh pantai, variansi temporal tinggi)"
+            },
+            {
+              "value": "b",
+              "label": "Wajib 1000 titik acak tanpa kriteria"
+            },
+            {
+              "value": "c",
+              "label": "Menghapus semua data angin"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u04q2",
+          "q": "Gradien SSH di UC1 mengukur perbedaan SSH antara…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Laut Jawa (utara) dan Samudra Hindia (selatan)"
+            },
+            {
+              "value": "b",
+              "label": "Dua kota di Eropa"
+            },
+            {
+              "value": "c",
+              "label": "Hanya danau air tawar"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u04q3",
+          "q": "Sumber tide utama yang dievaluasi untuk ekstraksi adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "FES2022 (dibandingkan dengan harmonik AWS)"
+            },
+            {
+              "value": "b",
+              "label": "Hanya tebak manual tanpa model"
+            },
+            {
+              "value": "c",
+              "label": "Data curah hujan radar cuaca"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u05",
+      "track": "uc1",
+      "title": "U5. Ekstraksi data",
+      "goal": "Menjelaskan definisi area/periode dan cara mengekstrak variabel sebelum analisis.",
+      "sections": [
+        {
+          "heading": "Definisi area dari densitas observasi",
+          "body": [
+            "Area digambar dengan menghitung jumlah occurrence data radar per piksel; piksel yang punya data dipertahankan.",
+            "Kemudian dibuat kotak studi di sekitar cakupan radar agar variabel lain (angin, SSH, dll.) bisa diekstrak konsisten.",
+            "Sunda (Bada): lon ~105.8–105.99, lat ~-6.01–-5.83. Lombok (Sega): lon ~115.49–115.8, lat ~-8.75–-8.47.",
+            "Langkah ini memastikan kita tidak melatih model di wilayah yang hampir tidak pernah terobservasi radar."
+          ]
+        },
+        {
+          "heading": "Definisi periode studi",
+          "body": [
+            "Deret waktu piksel terkaya dipakai untuk melihat gap panjang dan perubahan resolusi temporal.",
+            "Sebelum ~5 April 2023 resolusi data tampak 1 jam; setelah itu 10 menit sesuai ekspektasi operasional.",
+            "Ada gap ~3 bulan sekitar Desember 2023; karena itu studi memakai dua periode per selat (2023 dan 2024–2025).",
+            "Contoh Sunda: 2023-04-05–2023-10-20 dan 2024-02-01–2025-12-31; Lombok mirip dengan akhir periode-1 di November 2023 dan mulai periode-2 Maret 2024."
+          ]
+        },
+        {
+          "heading": "Karakteristik variabel yang diekstrak",
+          "body": [
+            "Arus HF Radar (MMS): ~0.009° / 10 menit — target spasial-temporal utama.",
+            "SSS/SSH/SST Mercator: ~0.083° / 1 jam; angin ERA5: ~0.25° / 1 jam; batimetri BATNAS: ~200 m (statis); tide FES: diselaraskan ~1 km / 10 menit; SST Ostia harian di titik terpilih.",
+            "Karena resolusi input sering lebih kasar dari radar, semula dilakukan interpolasi spasial; kemudian digeser ke strategi satu titik setelah diskusi BMKG.",
+            "Ekstraksi harus mencatat sumber, resolusi, dan kualitas agar eksperimen dapat direproduksi (penting untuk Kedro/MLflow nanti)."
+          ]
+        },
+        {
+          "heading": "Kontrol kualitas awal",
+          "body": [
+            "Periksa densitas spasial observasi dan time lag antar sampel radar (ada plot time lag Nov 2022–Mei 2023 di report).",
+            "Untuk tide, cek quality flag FES dan bandingkan dengan AWS di stasiun terdekat.",
+            "Untuk batimetri Lombok, outlier kedalaman ekstrem perlu dibersihkan sebelum model (discontinuity selatan).",
+            "Hanya setelah ekstraksi + QC dasar, analisis korelasi/SHAP dan preprocessing gap menjadi bermakna."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u05q1",
+          "q": "Target observasi utama yang diekstrak untuk label/arus adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Arus HF Radar (komponen U/V)"
+            },
+            {
+              "value": "b",
+              "label": "Presipitasi darat saja"
+            },
+            {
+              "value": "c",
+              "label": "Data seismik gempa"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u05q2",
+          "q": "Mengapa periode studi dipecah menjadi dua blok waktu?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Ada gap panjang ~Des 2023 dan perubahan resolusi temporal"
+            },
+            {
+              "value": "b",
+              "label": "Karena radar hanya hidup pada hari Senin"
+            },
+            {
+              "value": "c",
+              "label": "Karena PDF report tidak boleh melebihi 2 halaman"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u05q3",
+          "q": "Resolusi temporal radar yang diharapkan pada periode utama studi adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "10 menit"
+            },
+            {
+              "value": "b",
+              "label": "10 tahun"
+            },
+            {
+              "value": "c",
+              "label": "1 milenium"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u06",
+      "track": "uc1",
+      "title": "U6. Analisis data",
+      "goal": "Memakai distribusi, korelasi, SHAP, PSD, lag, dan CS/DS untuk memilih fitur dan lookback.",
+      "sections": [
+        {
+          "heading": "Observasi arus & transformasi CS/DS",
+          "body": [
+            "Rose plot dan quiver musiman menunjukkan arah dominan dan koherensi spasial berbeda di Sunda vs Lombok.",
+            "Transformasi CS/DS membantu memisahkan aliran maju (DS) dari gerakan melintang (CS).",
+            "Distribusi CS/DS mendekati normal tanpa outlier mencolok; variabilitas DS biasanya lebih besar daripada CS.",
+            "Langkah ini menyiapkan representasi target yang lebih fisik sebelum korelasi dan modeling."
+          ]
+        },
+        {
+          "heading": "Distribusi variabel & korelasi linear",
+          "body": [
+            "Melihat histogram/distribusi mendeteksi outlier, skala berbeda, dan kebutuhan normalisasi.",
+            "Matriks korelasi: variabel paling terkait arus meliputi SSH (terutama gradient), angin, tide (lebih jelas di Sunda), day-of-year, dan posisi (lon/lat).",
+            "Batimetri kurang berkorelasi di Sunda (relatif homogen) tetapi penting di Lombok menurut analisis lanjutan.",
+            "SSS dan sebagian SST menunjukkan hubungan lemah/redundan dengan angin atau SSH — kandidat untuk diuji lalu mungkin dibuang."
+          ]
+        },
+        {
+          "heading": "SHAP: efek non-linear dan interaksi",
+          "body": [
+            "Korelasi linear tidak cukup; SHAP memakai model surrogat (XGBoost) untuk mengukur kontribusi fitur ke prediksi.",
+            "Beeswarm SHAP mengonfirmasi pentingnya SSH gradient dan SST Ostia dibanding SSH/SST titik CMEMS semata.",
+            "Di Lombok, batimetri serta lat/lon sangat berpengaruh — masuk akal karena morfologi lebih kompleks.",
+            "Untuk angin, analisis mendorong komponen CS/DS di titik terpilih (bukan wajib menyertakan arah/norm mentah)."
+          ]
+        },
+        {
+          "heading": "PSD, dekomposisi, dan lag correlation",
+          "body": [
+            "PSD mengidentifikasi frekuensi dominan untuk cutoff filter tidal (high-pass) vs non-tidal (low-pass).",
+            "Setelah non-tidal diisolasi, scatter terhadap SSH gradient, angin, dan SST membantu melihat hubungan yang tertutup tide.",
+            "Auto-correlation arus memberi petunjuk lookback bermakna (hingga ~24 jam diuji); cross-correlation dengan tide kuat pada resolusi 10 menit.",
+            "Cross-correlation SSH gradient/angin/SST cenderung kurang bergantung lag; tetap ada catatan untuk uji gradient temporal SST dan histori angin bersama pakar."
+          ]
+        },
+        {
+          "heading": "Dari analisis ke rencana eksperimen input",
+          "body": [
+            "Urutan eksperimen: mulai dari past currents (frekuensi + lookback), lalu tambah variabel berdasar kepentingan: waktu/posisi → SSH gradient → tide → angin CS/DS → batimetri → SST Ostia → SSS.",
+            "Hanya variabel yang memperbaiki hasil yang dipertahankan — prinsip hemat fitur.",
+            "Analisis selesai terdokumentasi di Issue 3.0; ini fondasi pemilihan input, bukan skor akhir model DL.",
+            "Jika Anda pemula DL: anggap modul ini sebagai “feature engineering berbasis bukti” sebelum training berat."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u06q1",
+          "q": "SHAP dalam analisis UC1 terutama membantu…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Menilai efek non-linear/interaksi fitur terhadap arus"
+            },
+            {
+              "value": "b",
+              "label": "Mengukur suhu GPU server"
+            },
+            {
+              "value": "c",
+              "label": "Mencetak badge peserta pelatihan"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u06q2",
+          "q": "Mengapa SSH gradient diprioritaskan dibanding SSH titik biasa?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Korelasi/pengaruhnya terhadap arus lebih tinggi di analisis"
+            },
+            {
+              "value": "b",
+              "label": "Karena namanya lebih panjang"
+            },
+            {
+              "value": "c",
+              "label": "Karena tidak perlu data sama sekali"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u06q3",
+          "q": "Auto-correlation arus historis berguna untuk…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Menentukan lookback/frekuensi input yang masuk akal"
+            },
+            {
+              "value": "b",
+              "label": "Menghapus metrik Eulerian"
+            },
+            {
+              "value": "c",
+              "label": "Mengganti radar dengan kamera CCTV"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u07",
+      "track": "uc1",
+      "title": "U7. Preprocessing",
+      "goal": "Memahami isi gap (lokal vs full-map), lookback, standardisasi, dan temporal split tanpa leakage.",
+      "sections": [
+        {
+          "heading": "Jenis gap di data HF Radar",
+          "body": [
+            "Gap lokal: sebagian piksel hilang — pola utama: sedikit piksel (<~4%), chunk besar di border (>~5%), atau lubang interior dikelilingi data valid.",
+            "Full-map gaps: seluruh peta hilang pada timestamp tertentu — hanya interpolasi waktu yang relevan.",
+            "Distribusi durasi gap berbeda: Sunda mayoritas gap pendek; Lombok lebih sering gap lebih panjang.",
+            "Tujuan preprocessing: mengisi gap kecil yang andal agar data training cukup, tanpa memaksakan rekonstruksi yang error-nya besar."
+          ]
+        },
+        {
+          "heading": "Strategi mengisi gap kecil",
+          "body": [
+            "Dua alat utama: interpolasi linear sepanjang waktu (scipy) dan ekstrapolasi spasial Gauss–Seidel (pyinterp) yang menyebarkan nilai dari tetangga.",
+            "Alur gabungan: coba isi menurut ambang waktu; sisanya yang masih bolong diisi spasial jika proporsi data valid mencukupi.",
+            "Ambang durasi yang dipilih: hingga ~80 menit (Sunda) dan ~50 menit (Lombok) untuk mengutamakan interpolasi waktu dengan RMSE terkendali.",
+            "Ambang proporsi valid: Sunda ~0.9 (NaN max ~0.1); Lombok ~0.85 (NaN max ~0.15) untuk full mask dan border. Jika melebihi ambang, timestamp tidak dipakai training."
+          ]
+        },
+        {
+          "heading": "Lookback, mask, dan ketersediaan data",
+          "body": [
+            "Lookback analysis menghitung berapa banyak jendela historis yang sepenuhnya valid di dalam input mask.",
+            "Ada trade-off: lookback panjang menangkap dinamika lebih kaya, tetapi jumlah sampel training menurun.",
+            "Di Lombok, input mask memotong beberapa lintang paling selatan karena border sulit direkonstruksi; inference mask bisa berbeda.",
+            "Hasil lookback dilengkapi temuan auto-correlation agar pilihan jendela historis fisik dan praktis."
+          ]
+        },
+        {
+          "heading": "Normalisasi dan splitting temporal",
+          "body": [
+            "Kebanyakan variabel numerik mendekati Gaussian atau beda skala → dipilih standardisasi Z-score (bukan Min-Max) agar lebih tahan outlier.",
+            "Mean dan standar deviasi dihitung HANYA dari training set, lalu diterapkan ke val/test — mencegah data leakage.",
+            "Statistik disimpan untuk inverse-transform saat post-processing output model.",
+            "Split temporal memakai potongan waktu tersebar antar musim/tahun; 48 jam pertama tiap potongan dibuang agar event oseanografi tidak bocor antar subset."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u07q1",
+          "q": "Dua metode utama mengisi gap kecil HF Radar di UC1 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Interpolasi waktu + ekstrapolasi spasial (Gauss–Seidel)"
+            },
+            {
+              "value": "b",
+              "label": "Menghapus seluruh dataset setiap ada 1 NaN"
+            },
+            {
+              "value": "c",
+              "label": "Mengisi semua lubang dengan angka acak 999"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u07q2",
+          "q": "Mengapa mean/std normalisasi hanya dari training set?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Mencegah data leakage ke validation/test"
+            },
+            {
+              "value": "b",
+              "label": "Agar file PDF lebih berwarna"
+            },
+            {
+              "value": "c",
+              "label": "Karena val/test tidak boleh punya angka sama sekali"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u07q3",
+          "q": "Strategi split yang ditekankan UC1 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Temporal split dengan buffer anti-leakage"
+            },
+            {
+              "value": "b",
+              "label": "Acak total yang mencampur masa depan ke training"
+            },
+            {
+              "value": "c",
+              "label": "Test identik dengan training"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u08",
+      "track": "uc1",
+      "title": "U8. Baseline analogue (Milvus / KNN)",
+      "goal": "Memahami baseline non-DL: pencarian analogue, Hybrid Search, constraint forecast, dan batasannya.",
+      "sections": [
+        {
+          "heading": "Ide baseline: analogue / nearest neighbours",
+          "body": [
+            "Sebelum DL kompleks, UC1 membangun baseline KNN regression: cari situasi historis mirip, lalu regress state arus.",
+            "Pendekatan diadaptasi dari metode analogue BMKG di Selat Bali (tetangga berbasis kondisi fisik, terutama tide).",
+            "Fitur pencarian: tide, past currents, gradien SSH, dan angin; output regresi = field arus pada timestamp target.",
+            "Data yang masuk sudah dinormalisasi dari tahap preprocessing agar skala fitur sebanding."
+          ]
+        },
+        {
+          "heading": "Konstruksi database di Milvus",
+          "body": [
+            "Field arus tiap timestamp dil flatten menjadi vektor output.",
+            "Karena batas dimensi Milvus, dilakukan sampling spasial: interval 9 di Sunda → 8 titik valid; interval 10 di Lombok → 12 titik valid.",
+            "Tide disampling dual-resolusi: 10 menit untuk 0–24 jam sebelum target, dan 1 jam untuk 24–48 jam sebelumnya.",
+            "Past currents minimal 24 jam ke belakang ikut disimpan; SSH gradient dan angin ditambahkan berdasar temuan analisis."
+          ]
+        },
+        {
+          "heading": "Hybrid Search + WeightedRanker",
+          "body": [
+            "Milvus Hybrid Search mencari tetangga di ruang multi-vektor (beberapa keluarga fitur sekaligus).",
+            "WeightedRanker memberi bobot lebih besar ke tide dan past currents (driver utama), bobot lebih kecil ke faktor sekunder seperti angin.",
+            "Jarak kemiripan memakai L2 (Euclidean).",
+            "Protokol forecast ketat: kandidat historis harus ≥24 jam sebelum target; filter kualitas menolak kandidat dengan terlalu banyak NaN; tetangga harus berjarak ≥1 jam agar tidak redundan dari event yang sama."
+          ]
+        },
+        {
+          "heading": "Pembacaan hasil & limitasi (tanpa klaim DL)",
+          "body": [
+            "Issue 3.0 menyatakan hasil analogue “mitigated”: error lebih terkendali di Sunda, lebih kritis di Lombok terutama border dan komponen tertentu.",
+            "Limitasi KNN: jika semua tetangga kehilangan wilayah yang sama, prediksi juga bolong di wilayah itu.",
+            "Efek smoothing: rata-rata tetangga meredam ekstrem (nilai tinggi/rendah menjadi lebih datar).",
+            "Metrik kemiripan Milvus terbatas (L2/IP/cosine); DTW untuk deret waktu bisa menarik tetapi tidak tersedia di tool search yang dipakai."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u08q1",
+          "q": "Baseline UC1 berbasis…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Analogue / KNN dengan Milvus Hybrid Search"
+            },
+            {
+              "value": "b",
+              "label": "Tebakan acak tanpa data historis"
+            },
+            {
+              "value": "c",
+              "label": "Hanya mengedit foto satelit"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u08q2",
+          "q": "Constraint penting saat mencari analogue untuk forecast adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Kandidat historis ≥24 jam sebelum target"
+            },
+            {
+              "value": "b",
+              "label": "Wajib memakai data dari masa depan target"
+            },
+            {
+              "value": "c",
+              "label": "Mengabaikan NaN sepenuhnya tanpa filter"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u08q3",
+          "q": "WeightedRanker berguna karena…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Bisa memberi bobot lebih tinggi ke tide & past currents"
+            },
+            {
+              "value": "b",
+              "label": "Menghapus kebutuhan metrik evaluasi"
+            },
+            {
+              "value": "c",
+              "label": "Mengganti HF Radar dengan spreadsheet"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u09",
+      "track": "uc1",
+      "title": "U9. Arsitektur DL UC1",
+      "goal": "Mengaitkan LSTM, ConvLSTM, dan ConvLSTM+attention ke data field arus HF Radar.",
+      "sections": [
+        {
+          "heading": "Dari literatur ke pilihan arsitektur",
+          "body": [
+            "Literature review Issue 3.0 meninjau FCNN/RF/FFNN/LSTM untuk aspek temporal, serta CNN-GRU dan ConvLSTM untuk spatiotemporal.",
+            "Studi terkait menunjukkan perhatian (attention) sering memperbaiki prediksi arus dengan menimbang timestep informatif.",
+            "UC1 mendokumentasikan tiga arsitektur implementasi: LSTM, ConvLSTM, dan ConvLSTM dengan temporal attention.",
+            "Ini penerapan langsung F8–F9: memori waktu + (opsional) struktur spasial grid."
+          ]
+        },
+        {
+          "heading": "LSTM pada data UC1",
+          "body": [
+            "LSTM menangani dependensi temporal panjang lewat gerbang input/forget/output.",
+            "Tensor mentah: (batch, lookback, channel, lat, lon). LSTM butuh (batch, sequence, features).",
+            "Solusi: flatten channel×lat×lon menjadi vektor fitur per timestep — temporal terjaga, tetapi kedekatan spasial geografis hilang.",
+            "State terakhir diproyeksikan (via konvolusi) ke lead time untuk kedua komponen arus. Cocok sebagai baseline DL temporal, kurang ideal bila pola spasial lokal penting."
+          ]
+        },
+        {
+          "heading": "ConvLSTM: spasial + temporal",
+          "body": [
+            "ConvLSTM mengganti operasi dense di gerbang LSTM dengan konvolusi, sehingga hidden/cell state tetap berbentuk peta.",
+            "Model menjaga tetangga spasial, koherensi lokal, dan evolusi waktu sekaligus — cocok untuk field radar.",
+            "Setelah memproses lookback, representasi spatiotemporal terakhir di-decode dengan konvolusi 2D menjadi 2×lead_time channel (U dan V sepanjang horizon).",
+            "Bagi pemula: bayangkan LSTM yang “berpikir dalam bentuk gambar berurutan”, bukan daftar angka datar."
+          ]
+        },
+        {
+          "heading": "ConvLSTM + temporal attention",
+          "body": [
+            "Modul attention menerima seluruh urutan output ConvLSTM dan belajar bobot per timestep.",
+            "Setelah flatten spasial-fitur, softmax antar waktu menghasilkan bobot; timestep penting mendapat tekanan lebih besar.",
+            "Urutan tertimbang dijumlah jadi konteks tunggal, lalu di-reshape kembali ke bentuk spasial dan diproyeksikan seperti ConvLSTM biasa.",
+            "Penting: arsitektur terdokumentasi di Issue 3.0, tetapi Results analysis kuantitatif masih kosong — jangan mengisi angka performa dari imajinasi."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u09q1",
+          "q": "Arsitektur spatiotemporal utama yang menonjol di UC1 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "ConvLSTM (± temporal attention)"
+            },
+            {
+              "value": "b",
+              "label": "Hanya decision tree tanpa waktu/ruang"
+            },
+            {
+              "value": "c",
+              "label": "Model bahasa untuk surat dinas"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u09q2",
+          "q": "Kelemahan utama LSTM “flatten spasial” di UC1 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Kehilangan organisasi tetangga geografis antar piksel"
+            },
+            {
+              "value": "b",
+              "label": "Tidak bisa menerima batch size apa pun"
+            },
+            {
+              "value": "c",
+              "label": "Wajib memakai data teks saja"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u09q3",
+          "q": "Tentang performa numerik model DL di Issue 3.0…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Results analysis masih kosong; jangan mengarang skor"
+            },
+            {
+              "value": "b",
+              "label": "Sudah ada leaderboard final resmi di bab 9"
+            },
+            {
+              "value": "c",
+              "label": "Model dijamin error nol di semua selat"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u10",
+      "track": "uc1",
+      "title": "U10. Strategi training UC1",
+      "goal": "Membedakan one-pass, iterative, auto-regressive, dan residual learning untuk forecast arus.",
+      "sections": [
+        {
+          "heading": "One-pass: langsung ke lead time tetap",
+          "body": [
+            "Model belajar memetakan jendela lookback → state pada lead time (LT) tetap dalam satu forward pass.",
+            "Training relatif sederhana karena target selalu observasi asli, tanpa umpan balik prediksi.",
+            "Kelemahan: untuk LT panjang, model harus “melompat” banyak proses dinamis sekaligus — sering lebih sulit untuk horizon ~24 jam.",
+            "Cocok sebagai eksperimen awal yang bersih untuk membandingkan arsitektur pada LT spesifik."
+          ]
+        },
+        {
+          "heading": "Iterative: langkah pendek diulang saat inferensi",
+          "body": [
+            "Saat training, model dioptimasi untuk langkah pendek (misalnya beberapa jam).",
+            "Saat inferensi, prediksi dimasukkan lagi sebagai input untuk mencapai horizon lebih panjang (hingga 24 jam).",
+            "Fleksibel: horizon bisa diatur lewat jumlah iterasi.",
+            "Risiko klasik: akumulasi error — model dilatih hanya pada input ground truth, belum terbiasa pada prediksinya sendiri, sehingga drift bisa membesar."
+          ]
+        },
+        {
+          "heading": "Auto-regressive: latih dengan umpan prediksi",
+          "body": [
+            "Mirip iterative, tetapi training juga memasukkan (penuh/sebagian) output model sebagai input langkah berikutnya.",
+            "Tujuan: mengurangi gap distribusi antara training dan inferensi (exposure ke error sendiri).",
+            "Potensi lebih baik untuk horizon panjang dan lead time fleksibel.",
+            "Biaya: training lebih rumit, dependensi temporal efektif lebih panjang, dan optimasi bisa kurang stabil — butuh strategi hati-hati (terkait F7/F10)."
+          ]
+        },
+        {
+          "heading": "Residual learning: prediksi delta",
+          "body": [
+            "Alih-alih memprediksi field arus absolut, model memprediksi residual/increment terhadap state arus terakhir di lookback.",
+            "Prediksi final = state terakhir + residual.",
+            "Intuisi: sering lebih mudah belajar “perubahan kecil” daripada membangun ulang seluruh field dari nol, terutama jika persistensi arus tinggi.",
+            "Residual learning dapat digabung dengan kerangka one-pass/iterative/auto-regressive sebagai perbaikan tambahan yang didokumentasikan di Issue 3.0."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u10q1",
+          "q": "Residual learning pada UC1 memprediksi…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Delta/increment terhadap state arus terakhir"
+            },
+            {
+              "value": "b",
+              "label": "Nama file PDF report"
+            },
+            {
+              "value": "c",
+              "label": "Jadwal rapat saja"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u10q2",
+          "q": "Risiko utama strategi iterative adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Akumulasi error karena prediksi dipakai berulang saat inferensi"
+            },
+            {
+              "value": "b",
+              "label": "Tidak bisa memakai GPU"
+            },
+            {
+              "value": "c",
+              "label": "Menghapus semua metrik Lagrangian otomatis"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u10q3",
+          "q": "Keunggulan konsep auto-regressive dibanding iterative murni adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Training mengekspos model pada input hasil prediksi sendiri"
+            },
+            {
+              "value": "b",
+              "label": "Tidak perlu data training sama sekali"
+            },
+            {
+              "value": "c",
+              "label": "Menghilangkan kebutuhan validasi"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u11",
+      "track": "uc1",
+      "title": "U11. Metrik Eulerian & Lagrangian",
+      "goal": "Memahami kerangka evaluasi fisik arus: error di grid dan kualitas lintasan partikel (NCLS).",
+      "sections": [
+        {
+          "heading": "Eulerian: membandingkan di titik/waktu yang sama",
+          "body": [
+            "Kerangka Eulerian membandingkan prediksi vs observasi pada lokasi dan waktu yang bersesuaian di grid.",
+            "Metrik per komponen (U/V atau DS/CS): RMSE/MSE, MAE, bias, R²/RSE — masing-masing punya interpretasi berbeda (penalti error besar, arah sistematis, variansi terjelaskan).",
+            "Visual diagnostik: peta rata-rata error per piksel, kurva error domain-rata terhadap waktu, dan agregat global yang bisa dilog ke MLflow.",
+            "Ini fondasi yang familiar dari F10, diterapkan ke field arus."
+          ]
+        },
+        {
+          "heading": "Metrik vektorial & akurasi berbasis ambang",
+          "body": [
+            "Selain komponen terpisah, evaluasi arah (direction) dan kekuatan (norm = sqrt(u²+v²)) memberi gambaran integral aliran.",
+            "RMSE arah memperhitungkan sifat sudut (wrap-around 360°).",
+            "Threshold-based accuracy: apakah magnitude masuk kategori intensitas yang sama dengan observasi (min–max tertentu)?",
+            "Ini selaras prioritas BMKG pada kekuatan arus: kadang “benar kelas intensitas” lebih relevan operasional daripada hanya mengejar error kontinu kecil."
+          ]
+        },
+        {
+          "heading": "Lagrangian: partikel dan NCLS",
+          "body": [
+            "Lagrangian meninjau lintasan parcel: adveksi partikel pada field observasi vs field prediksi.",
+            "NCLS (Normalized Cumulative Lagrangian Separation) mengukur pemisahan kumulatif lintasan, dinormalisasi terhadap panjang lintasan observasi.",
+            "UC1 menyiapkan skor pada horizon 3 jam, 6 jam, 12 jam, dan 24 jam.",
+            "Relevan untuk search-and-rescue: kualitas lintasan drift sering lebih bermakna daripada error titik tunggal."
+          ]
+        },
+        {
+          "heading": "Batasan interpretasi Lagrangian",
+          "body": [
+            "Partikel yang keluar domain studi tidak bisa dinilai untuk drift panjang — skor horizon panjang hanya mewakili wilayah/waktu di mana arus menahan partikel di dalam domain.",
+            "Contoh di report memakai data dummy (noise) untuk ilustrasi pipeline; output model terlatih akan dipakai kemudian.",
+            "Karena Results analysis masih kosong, Anda wajib paham kerangka metrik tanpa mengklaim angka kinerja final.",
+            "Praktik baik: laporkan Eulerian dan Lagrangian bersama-sama, plus catatan cakupan spasial partikel yang bertahan."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u11q1",
+          "q": "NCLS adalah metrik…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Lagrangian (pemisahan lintasan partikel)"
+            },
+            {
+              "value": "b",
+              "label": "Keuangan anggaran proyek"
+            },
+            {
+              "value": "c",
+              "label": "Resolusi monitor presenter"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u11q2",
+          "q": "Metrik Eulerian membandingkan prediksi dan observasi…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Pada lokasi dan waktu yang bersesuaian di grid"
+            },
+            {
+              "value": "b",
+              "label": "Hanya lewat warna logo"
+            },
+            {
+              "value": "c",
+              "label": "Tanpa memakai data arus sama sekali"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u11q3",
+          "q": "Mengapa skor Lagrangian 24 jam harus ditafsir hati-hati?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Hanya partikel yang tetap di domain yang dinilai"
+            },
+            {
+              "value": "b",
+              "label": "Karena 24 jam tidak ada di kalender"
+            },
+            {
+              "value": "c",
+              "label": "Karena NCLS hanya untuk suhu udara"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    },
+    {
+      "id": "u12",
+      "track": "uc1",
+      "title": "U12. Status, next steps, FT Sep 2026 & AI Tutor",
+      "goal": "Merangkum status Issue 3.0, rencana lanjutan, Factory Training, dan cara memakai tutor.",
+      "sections": [
+        {
+          "heading": "Status ringkas per 12 Juni 2026",
+          "body": [
+            "Selesai terdokumentasi: data extraction, analysis, preprocessing; baseline analogue Milvus/KNN; kerangka metrik & visualisasi; arsitektur DL dan strategi training.",
+            "Belum diisi di Issue 3.0: Results analysis (kinerja model), unit & non-regression tests, automatic pipeline development.",
+            "Artinya fondasi ilmiah dan engineering awal sudah ada; klaim “model produksi selesai” belum didukung bab hasil.",
+            "Gunakan status ini saat presentasi progres agar ekspektasi stakeholder realistis."
+          ]
+        },
+        {
+          "heading": "Next steps teknis",
+          "body": [
+            "Lengkapi evaluasi: bandingkan prediksi DL vs baseline dengan metrik Eulerian dan Lagrangian.",
+            "Bangun kepercayaan engineering: unit test, non-regression test, dan pipeline otomatis (ekstraksi → preprocess → inferensi → monitoring).",
+            "Keputusan operasional masih perlu: frekuensi run, sumber data real-time, penanganan gap panjang, dan siapa yang memonitor kualitas.",
+            "Iterasi sampling/fitur baseline (titik geografis tide/arus) juga disebut sebagai perspektif perbaikan analogue."
+          ]
+        },
+        {
+          "heading": "Factory Training AI UCs — September 2026",
+          "body": [
+            "Dokumen persiapan CLS-M2P3-0394 merencanakan pelatihan kapasitas 21–25 September 2026.",
+            "Dua hari bersama: fundamental DL & training behaviour, lalu improving models + experiment tracking (Lightning, Kedro, MLflow).",
+            "Tiga hari UC1: Data (ekstraksi/analisis/preprocessing/DataModule) → Model & metrics (ConvLSTM, strategi training, metrik, multimodal) → Production & discussion.",
+            "FT adalah rencana transfer pengetahuan, selaras materi F1–F10 + U1–U12 — bukan sertifikat bahwa Results analysis Issue 3.0 sudah terisi."
+          ]
+        },
+        {
+          "heading": "Menjalankan AI Tutor (terpisah dari Canvas)",
+          "body": [
+            "Canvas kurikulum tidak memanggil API; tutor dijalankan di terminal dari folder learn-uc1-tutor.",
+            "Langkah tipikal: cd learn-uc1-tutor → npm install → set CURSOR_API_KEY → npm run tutor.",
+            "Tutor dirancang untuk pemula DL: jelaskan loss/epoch/LSTM dengan bahasa sederhana lalu kaitkan ke HF Radar UC1.",
+            "Minta tutor mematuhi cut-off Issue 3.0: jangan mengarang angka performa; arahkan ke dokumen preparation/UC1 - Report.pdf bila ragu."
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "id": "u12q1",
+          "q": "Yang BELUM diisi di UC1 Draft Report Issue 3.0?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Results analysis, unit tests, dan automatic pipeline"
+            },
+            {
+              "value": "b",
+              "label": "Definisi area Sunda/Lombok"
+            },
+            {
+              "value": "c",
+              "label": "Daftar input tide/angin"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u12q2",
+          "q": "Factory Training September 2026 paling tepat digambarkan sebagai…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Rencana pelatihan kapasitas AI UCs (bukan klaim produksi selesai)"
+            },
+            {
+              "value": "b",
+              "label": "Pengganti seluruh observasi HF Radar"
+            },
+            {
+              "value": "c",
+              "label": "Pelepasan skor final resmi di bab Results Issue 3.0"
+            }
+          ],
+          "correct": "a"
+        },
+        {
+          "id": "u12q3",
+          "q": "Bagaimana hubungan Canvas dan AI Tutor?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Canvas untuk belajar mandiri; tutor dijalankan terpisah di terminal"
+            },
+            {
+              "value": "b",
+              "label": "Canvas wajib memanggil SDK di setiap klik kuis"
+            },
+            {
+              "value": "c",
+              "label": "Tutor menggantikan semua modul F1–F10 tanpa dibaca"
+            }
+          ],
+          "correct": "a"
+        }
+      ]
+    }
+  ],
+  "capstone": [
+    {
+      "id": "c1",
+      "q": "Supervised learning membutuhkan…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Pasangan input X dan target y"
+        },
+        {
+          "value": "b",
+          "label": "Hanya logo institusi"
+        },
+        {
+          "value": "c",
+          "label": "Tanpa data sama sekali"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c2",
+      "q": "Loss function mengukur…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Kesalahan prediksi vs target"
+        },
+        {
+          "value": "b",
+          "label": "Kecepatan kipas server saja"
+        },
+        {
+          "value": "c",
+          "label": "Jumlah peserta FT"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c3",
+      "q": "Untuk data arus berurutan waktu, split terbaik…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Temporal split"
+        },
+        {
+          "value": "b",
+          "label": "Acak yang mencampur masa depan ke training"
+        },
+        {
+          "value": "c",
+          "label": "Tidak perlu validation"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c4",
+      "q": "Overfitting ditandai…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Train bagus, validation jelek"
+        },
+        {
+          "value": "b",
+          "label": "Semua loss naik selalu"
+        },
+        {
+          "value": "c",
+          "label": "Model tidak pernah ditrain"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c5",
+      "q": "LSTM terutama untuk…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Dependensi temporal / urutan"
+        },
+        {
+          "value": "b",
+          "label": "Mengedit surat dinas"
+        },
+        {
+          "value": "c",
+          "label": "Mengukur salinitas tanpa sensor"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c6",
+      "q": "ConvLSTM menggabungkan…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Konvolusi spasial + memori temporal"
+        },
+        {
+          "value": "b",
+          "label": "Hanya administrasi"
+        },
+        {
+          "value": "c",
+          "label": "PDF compression"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c7",
+      "q": "UC1 menyelesaikan…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Gap HF Radar + forecast arus ~24 jam"
+        },
+        {
+          "value": "b",
+          "label": "Prediksi gempa real-time saja"
+        },
+        {
+          "value": "c",
+          "label": "Billing cloud"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c8",
+      "q": "Baseline analogue UC1 memakai…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Milvus / KNN hybrid search"
+        },
+        {
+          "value": "b",
+          "label": "Tanpa fitur tide"
+        },
+        {
+          "value": "c",
+          "label": "Tebakan tanpa data"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c9",
+      "q": "MLflow berguna untuk…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Experiment tracking"
+        },
+        {
+          "value": "b",
+          "label": "Mengganti radar"
+        },
+        {
+          "value": "c",
+          "label": "Mengukur ITF langsung di laut"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c10",
+      "q": "Results analysis di Issue 3.0…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Belum diisi — jangan klaim skor final"
+        },
+        {
+          "value": "b",
+          "label": "Sudah ada RMSE produksi resmi"
+        },
+        {
+          "value": "c",
+          "label": "Menghapus kebutuhan baseline"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c11",
+      "q": "Gradient descent…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Menggeser bobot agar loss turun"
+        },
+        {
+          "value": "b",
+          "label": "Menghapus dataset validasi"
+        },
+        {
+          "value": "c",
+          "label": "Mengganti batimetri"
+        }
+      ],
+      "correct": "a"
+    },
+    {
+      "id": "c12",
+      "q": "Data leakage…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Membuat skor terlihat palsu bagus"
+        },
+        {
+          "value": "b",
+          "label": "Selalu dianjurkan"
+        },
+        {
+          "value": "c",
+          "label": "Tidak relevan untuk time series"
+        }
+      ],
+      "correct": "a"
+    }
+  ]
+}
