@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import curriculum from "./data/curriculum.json";
 import type { Curriculum, ModuleDef, QuizItem } from "./types";
 import { useProgress } from "./hooks/useProgress";
@@ -201,6 +201,22 @@ function CapstonePane({
   );
 }
 
+function useIsNarrow(breakpoint = 860) {
+  const [narrow, setNarrow] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia(`(max-width: ${breakpoint}px)`).matches
+      : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const onChange = () => setNarrow(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [breakpoint]);
+  return narrow;
+}
+
 export default function App() {
   const firstId = data.modules[0]?.id ?? "f01";
   const {
@@ -213,6 +229,19 @@ export default function App() {
     submitCapstone,
     resetProgress,
   } = useProgress(firstId);
+  const isNarrow = useIsNarrow();
+  const [tocOpen, setTocOpen] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+
+  const goTo = (id: string) => {
+    setActive(id);
+    if (isNarrow) {
+      setTocOpen(false);
+      requestAnimationFrame(() => {
+        mainRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  };
 
   const activeModule = useMemo(
     () => data.modules.find((m) => m.id === state.activeId),
@@ -230,6 +259,7 @@ export default function App() {
   ).length;
 
   const idx = ALL_IDS.indexOf(state.activeId);
+  const showToc = !isNarrow || tocOpen;
 
   return (
     <div className="app">
@@ -264,72 +294,97 @@ export default function App() {
           <button type="button" className="btn ghost" onClick={resetProgress}>
             Reset progres
           </button>
-          <a className="btn ghost" href="#silabus">
+          <button
+            type="button"
+            className="btn ghost"
+            onClick={() => {
+              setTocOpen(true);
+              document.getElementById("silabus")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
             Loncat ke silabus
-          </a>
+          </button>
         </div>
       </header>
 
       <div className="layout">
         <aside className="sidebar" id="silabus">
-          <h3>Silabus</h3>
-          <p className="hint">F1–F10 dulu jika baru kenal deep learning.</p>
-          <ol className="toc">
-            {data.modules.map((m) => (
-              <li key={m.id}>
+          <div className="sidebar-head">
+            <div>
+              <h3>Silabus</h3>
+              <p className="hint">F1–F10 dulu jika baru kenal deep learning.</p>
+            </div>
+            {isNarrow && (
+              <button
+                type="button"
+                className="btn toc-toggle"
+                aria-expanded={tocOpen}
+                onClick={() => setTocOpen((v) => !v)}
+              >
+                {tocOpen ? "Tutup" : "Buka daftar"}
+              </button>
+            )}
+          </div>
+          {showToc && (
+            <ol className="toc">
+              {data.modules.map((m) => (
+                <li key={m.id}>
+                  <button
+                    type="button"
+                    className={
+                      state.activeId === m.id
+                        ? "toc-btn active"
+                        : "toc-btn"
+                    }
+                    onClick={() => goTo(m.id)}
+                  >
+                    <span
+                      className={
+                        state.completed[m.id] ? "dot done" : "dot"
+                      }
+                    />
+                    {m.title}
+                  </button>
+                </li>
+              ))}
+              <li>
                 <button
                   type="button"
                   className={
-                    state.activeId === m.id
-                      ? "toc-btn active"
-                      : "toc-btn"
+                    state.activeId === "capstone" ? "toc-btn active" : "toc-btn"
                   }
-                  onClick={() => setActive(m.id)}
+                  onClick={() => goTo("capstone")}
                 >
                   <span
                     className={
-                      state.completed[m.id] ? "dot done" : "dot"
+                      state.capstoneDone || state.completed.capstone
+                        ? "dot done"
+                        : "dot"
                     }
                   />
-                  {m.title}
+                  Capstone — Fundamental + UC1
                 </button>
               </li>
-            ))}
-            <li>
-              <button
-                type="button"
-                className={
-                  state.activeId === "capstone" ? "toc-btn active" : "toc-btn"
-                }
-                onClick={() => setActive("capstone")}
-              >
-                <span
-                  className={
-                    state.capstoneDone || state.completed.capstone
-                      ? "dot done"
-                      : "dot"
-                  }
-                />
-                Capstone — Fundamental + UC1
-              </button>
-            </li>
-          </ol>
+            </ol>
+          )}
         </aside>
 
-        <main>
+        <main ref={mainRef} id="konten">
           <div className="nav-row">
             <button
               type="button"
               className="btn"
               disabled={idx <= 0}
-              onClick={() => setActive(ALL_IDS[idx - 1])}
+              onClick={() => goTo(ALL_IDS[idx - 1])}
             >
               Sebelumnya
             </button>
             <select
               className="jump"
               value={state.activeId}
-              onChange={(e) => setActive(e.target.value)}
+              onChange={(e) => goTo(e.target.value)}
             >
               {ALL_IDS.map((id) => (
                 <option key={id} value={id}>
@@ -343,7 +398,7 @@ export default function App() {
               type="button"
               className="btn"
               disabled={idx >= ALL_IDS.length - 1}
-              onClick={() => setActive(ALL_IDS[idx + 1])}
+              onClick={() => goTo(ALL_IDS[idx + 1])}
             >
               Berikutnya
             </button>
