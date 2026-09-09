@@ -5,6 +5,8 @@ export type QuizItem = {
   q: string;
   options: Array<{ value: string; label: string }>;
   correct: string;
+  /** Optional explanation shown after submit (Study Guide). */
+  explain?: string;
 };
 
 export type ModuleDef = {

@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UC1 Deep Learning Study Guide – MMS2/M2P3</title>
+<style>
+  :root {
+    --primary: #0a5c8a;
+    --secondary: #1aa3a3;
+    --accent: #f0a500;
+    --bg: #f4f7fa;
+    --card: #ffffff;
+    --text: #1e2a38;
+    --muted: #6b7c93;
+    --success: #2ecc71;
+    --warning: #e67e22;
+    --danger: #e74c3c;
+    --code: #1e2a38;
+    --codebg: #eaf0f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* NAV */
+  nav {
+    background: linear-gradient(135deg, var(--primary), #0d7abf);
+    color: white;
+    padding: 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  }
+  .nav-header { display: flex; align-items: center; gap: 12px; padding: 10px 20px; }
+  .nav-logo { font-size: 1.3rem; font-weight: 800; letter-spacing: 1px; }
+  .nav-sub { font-size: 0.78rem; opacity: 0.8; }
+  .nav-tabs { display: flex; overflow-x: auto; padding: 0 20px; gap: 2px; scrollbar-width: none; }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 8px 16px; cursor: pointer; border-radius: 6px 6px 0 0;
+    font-size: 0.8rem; font-weight: 600; white-space: nowrap;
+    background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);
+    border: none; transition: all 0.2s;
+  }
+  .nav-tab:hover { background: rgba(255,255,255,0.2); color: white; }
+  .nav-tab.active { background: var(--bg); color: var(--primary); }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border-radius: 12px;
+    padding: 24px; margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border-left: 4px solid var(--primary);
+  }
+  .card.accent { border-left-color: var(--accent); }
+  .card.success { border-left-color: var(--success); }
+  .card.warning { border-left-color: var(--warning); }
+  .card.danger { border-left-color: var(--danger); }
+  .card.secondary { border-left-color: var(--secondary); }
+  .card h2 { font-size: 1.25rem; margin-bottom: 12px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+  .card h3 { font-size: 1.05rem; margin: 16px 0 8px; color: var(--text); }
+  .card h4 { font-size: 0.95rem; margin: 12px 0 6px; color: var(--muted); }
+  .card p { margin-bottom: 10px; font-size: 0.95rem; }
+  .card ul, .card ol { padding-left: 20px; margin-bottom: 10px; font-size: 0.93rem; }
+  .card li { margin-bottom: 5px; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* BADGES */
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 99px;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-orange { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-purple { background: #ede9fe; color: #6d28d9; }
+  .badge-teal { background: #ccfbf1; color: #134e4a; }
+
+  /* CODE */
+  .code-block {
+    background: var(--codebg); border-radius: 8px;
+    padding: 14px 16px; font-family: 'Courier New', monospace;
+    font-size: 0.82rem; overflow-x: auto; margin: 10px 0;
+    border: 1px solid #d1e0f0;
+  }
+  .highlight { background: #fffbcc; padding: 0 3px; border-radius: 3px; }
+
+  /* DIAGRAM */
+  .diagram {
+    background: linear-gradient(135deg, #eaf4fb, #f0faf8);
+    border-radius: 10px; padding: 20px; margin: 14px 0;
+    border: 1.5px dashed #93c5db; text-align: center;
+    font-size: 0.85rem;
+  }
+  .diagram .flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .flow-box {
+    background: white; border: 2px solid var(--primary);
+    border-radius: 8px; padding: 8px 14px; font-weight: 600;
+    font-size: 0.82rem; color: var(--primary); min-width: 90px;
+  }
+  .flow-box.data { border-color: var(--secondary); color: var(--secondary); }
+  .flow-box.model { border-color: var(--accent); color: #a07000; }
+  .flow-box.output { border-color: var(--success); color: #166534; }
+  .arrow { font-size: 1.2rem; color: var(--muted); }
+
+  /* FORMULA */
+  .formula {
+    background: #f8f3ff; border-radius: 8px; padding: 12px 16px;
+    text-align: center; font-family: 'Courier New', monospace;
+    font-size: 0.9rem; margin: 10px 0; color: #4c1d95;
+    border: 1px solid #ddd6fe;
+  }
+
+  /* QUIZ */
+  .quiz-question { margin-bottom: 24px; }
+  .quiz-q { font-weight: 700; font-size: 1rem; margin-bottom: 10px; color: var(--primary); }
+  .quiz-option {
+    display: block; padding: 10px 14px; margin: 6px 0;
+    background: white; border: 2px solid #d1e0f0; border-radius: 8px;
+    cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+    width: 100%;
+  }
+  .quiz-option:hover { border-color: var(--primary); background: #eaf4fb; }
+  .quiz-option.correct { border-color: var(--success); background: #dcfce7; color: #166534; }
+  .quiz-option.wrong { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+  .quiz-option.reveal-correct { border-color: var(--success); background: #dcfce7; color: #166534; }
+  .quiz-explain { margin-top: 10px; padding: 12px; background: #f0fdf4; border-radius: 8px; font-size: 0.88rem; display: none; border-left: 3px solid var(--success); }
+  .quiz-explain.wrong-explain { background: #fff7f0; border-left-color: var(--warning); }
+  .quiz-btn { padding: 8px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; margin-top: 8px; }
+  .quiz-score { font-size: 1.2rem; font-weight: 700; text-align: center; padding: 16px; background: linear-gradient(135deg,#dbeafe,#dcfce7); border-radius: 10px; margin-top: 16px; display: none; }
+
+  /* PROGRESS BAR */
+  .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; margin: 6px 0; }
+  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--secondary), var(--primary)); transition: width 0.5s; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 10px 0; }
+  th { background: var(--primary); color: white; padding: 8px 12px; text-align: left; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; }
+  tr:hover td { background: #f8fafc; }
+
+  /* CALLOUT */
+  .callout { display: flex; gap: 12px; padding: 14px; border-radius: 10px; margin: 12px 0; font-size: 0.9rem; }
+  .callout.info { background: #dbeafe; border-left: 4px solid #3b82f6; }
+  .callout.tip { background: #dcfce7; border-left: 4px solid var(--success); }
+  .callout.warn { background: #fef3c7; border-left: 4px solid var(--accent); }
+  .callout.danger { background: #fee2e2; border-left: 4px solid var(--danger); }
+  .callout-icon { font-size: 1.3rem; }
+  .callout-text { flex: 1; }
+
+  /* TOGGLE */
+  .toggle-btn {
+    background: none; border: 1.5px solid var(--primary); border-radius: 6px;
+    color: var(--primary); padding: 5px 14px; cursor: pointer; font-size: 0.82rem;
+    margin-top: 6px; transition: all 0.2s;
+  }
+  .toggle-btn:hover { background: var(--primary); color: white; }
+  .toggle-content { display: none; margin-top: 10px; }
+  .toggle-content.open { display: block; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white; border-radius: 14px; padding: 28px 24px; margin-bottom: 24px;
+  }
+  .hero h1 { font-size: 1.6rem; margin-bottom: 6px; }
+  .hero p { opacity: 0.9; font-size: 0.95rem; }
+  .hero .tags { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .hero .tag { background: rgba(255,255,255,0.2); padding: 3px 12px; border-radius: 99px; font-size: 0.78rem; }
+
+  /* SECTION HEADER */
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .section-header h1 { font-size: 1.4rem; color: var(--primary); }
+
+  /* LSTM VISUAL */
+  .lstm-cell {
+    display: flex; gap: 4px; align-items: center; justify-content: center;
+    flex-wrap: wrap; padding: 16px; background: #f8f3ff; border-radius: 10px;
+    border: 1.5px solid #ddd6fe;
+  }
+  .gate {
+    background: white; border: 2px solid #7c3aed; border-radius: 8px;
+    padding: 8px 12px; text-align: center; min-width: 80px;
+    font-size: 0.8rem; font-weight: 600; color: #4c1d95;
+  }
+  .gate.forget { border-color: #ef4444; color: #991b1b; }
+  .gate.input { border-color: #3b82f6; color: #1e40af; }
+  .gate.output { border-color: #10b981; color: #166534; }
+
+  /* ANCHOR NAV */
+  .anchor-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .anchor-link { padding: 4px 12px; background: white; border: 1.5px solid #d1e0f0; border-radius: 99px; font-size: 0.78rem; cursor: pointer; color: var(--primary); text-decoration: none; }
+  .anchor-link:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+  /* ROADMAP */
+  .roadmap { display: flex; flex-direction: column; gap: 0; }
+  .roadmap-step { display: flex; gap: 16px; }
+  .roadmap-line { display: flex; flex-direction: column; align-items: center; }
+  .roadmap-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 4px; }
+  .roadmap-connector { width: 2px; flex: 1; background: #d1e0f0; min-height: 30px; }
+  .roadmap-content { padding-bottom: 18px; }
+  .roadmap-content h4 { font-size: 0.95rem; color: var(--primary); margin-bottom: 3px; }
+  .roadmap-content p { font-size: 0.85rem; color: var(--muted); }
+
+  /* SCROLL TO TOP */
+  .back-top { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 50; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-header">
+    <div>
+      <div class="nav-logo">🌊 MMS2 UC1 Study Guide</div>
+      <div class="nav-sub">Deep Learning for Ocean Current Estimation — Training Preparation</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home')">🏠 Home</button>
+    <button class="nav-tab" onclick="showPage('ocean')">🌊 Oceanography</button>
+    <button class="nav-tab" onclick="showPage('ml-basics')">🧠 ML Basics</button>
+    <button class="nav-tab" onclick="showPage('data')">📊 Data & Features</button>
+    <button class="nav-tab" onclick="showPage('models')">🤖 Models</button>
+    <button class="nav-tab" onclick="showPage('metrics')">📏 Metrics</button>
+    <button class="nav-tab" onclick="showPage('pipeline')">⚙️ Pipeline</button>
+    <button class="nav-tab" onclick="showPage('quiz')">❓ Quiz</button>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ========== HOME ========== -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>🌊 UC1 Deep Learning Study Guide</h1>
+    <p>Comprehensive learning material for the MMS2/M2P3 training in Toulouse (September 2026). Focus: <strong>Use Case 1 — Ocean Current Estimation from HF Radar</strong> using Deep Learning.</p>
+    <div class="tags">
+      <span class="tag">🎯 Zero DL background friendly</span>
+      <span class="tag">📍 Sunda & Lombok Strait</span>
+      <span class="tag">🤝 CLS × BMKG</span>
+      <span class="tag">🐍 PyTorch Lightning</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>📚 What You'll Learn</h2>
+      <div class="roadmap">
+        <div class="roadmap-step">
+          <div class="roadmap-line"><div class="roadmap-dot"></div><div class="roadmap-connector"></div></div>
+          <div class="roadmap-content"><h4>🌊 Oceanography Context</h4><p>Indonesian Throughflow, monsoons, tidal patterns, why currents matter</p></div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-line"><div class="roadmap-dot" style="background:var(--secondary)"></div><div class="roadmap-connector"></div></div>
+          <div class="roadmap-content"><h4>🧠 ML/DL Fundamentals</h4><p>Neural nets, training, loss functions, backpropagation from scratch</p></div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-line"><div class="roadmap-dot" style="background:var(--accent)"></div><div class="roadmap-connector"></div></div>
+          <div class="roadmap-content"><h4>📊 Data Analysis & Preprocessing</h4><p>HF Radar data, correlations, gap filling, normalization, splits</p></div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-line"><div class="roadmap-dot" style="background:var(--warning)"></div><div class="roadmap-connector"></div></div>
+          <div class="roadmap-content"><h4>🤖 Model Architectures</h4><p>LSTM, ConvLSTM, Attention — how they work and why we use them</p></div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-line"><div class="roadmap-dot" style="background:var(--success)"></div><div class="roadmap-connector"></div></div>
+          <div class="roadmap-content"><h4>📏 Evaluation Metrics</h4><p>RMSE, MAE, R², Lagrangian skill scores, what "good" looks like</p></div>
+        </div>
+        <div class="roadmap-step">
+          <div class="roadmap-line"><div class="roadmap-dot" style="background:var(--danger)"></div><div class="roadmap-connector"></div></div>
+          <div class="roadmap-content"><h4>❓ Quiz & Practice</h4><p>Test your understanding with interactive questions and answers</p></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card accent">
+        <h2>🎯 Problem Statement</h2>
+        <p><strong>UC1 Goal:</strong> Use Machine Learning to estimate ocean surface currents when HF Radar data has gaps, and to forecast up to 24 hours ahead.</p>
+        <div class="callout info">
+          <div class="callout-icon">📡</div>
+          <div class="callout-text"><strong>HF Radar</strong> measures surface currents along coastlines but frequently has temporal gaps due to hardware issues. These gaps can last several days!</div>
+        </div>
+        <div class="diagram">
+          <div class="flow">
+            <div class="flow-box data">HF Radar<br><small>10min, 1km</small></div>
+            <span class="arrow">+</span>
+            <div class="flow-box data">Tide, SSH<br>Wind, Bathy</div>
+            <span class="arrow">→</span>
+            <div class="flow-box model">DL Model<br>(LSTM/ConvLSTM)</div>
+            <span class="arrow">→</span>
+            <div class="flow-box output">Currents U,V<br>filled + forecast</div>
+          </div>
+        </div>
+        <h3>Study Areas</h3>
+        <ul>
+          <li><strong>Sunda Strait</strong> (Bada site) — between Java & Sumatra</li>
+          <li><strong>Lombok Strait</strong> (Sega site) — between Bali & Lombok</li>
+        </ul>
+      </div>
+      <div class="card success">
+        <h2>📅 Training Week Overview</h2>
+        <table>
+          <tr><th>Day</th><th>Topic</th></tr>
+          <tr><td>Mon 21/9</td><td>DL Fundamentals & Training</td></tr>
+          <tr><td>Tue 22/9</td><td>Improving Models & Experiment Tracking</td></tr>
+          <tr><td>Wed 23/9</td><td>UC1 Data (extraction, analysis, preprocessing)</td></tr>
+          <tr><td>Thu 24/9</td><td>UC1 Models & Metrics</td></tr>
+          <tr><td>Fri 25/9</td><td>Production & Discussions</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card warning">
+    <h2>⚡ Quick Start — Key Terms Glossary</h2>
+    <div class="grid-3">
+      <div>
+        <h4>🌊 Oceanography</h4>
+        <ul>
+          <li><strong>HFR</strong> — High-Frequency Radar</li>
+          <li><strong>SSH</strong> — Sea Surface Height</li>
+          <li><strong>SST</strong> — Sea Surface Temperature</li>
+          <li><strong>SSS</strong> — Sea Surface Salinity</li>
+          <li><strong>ITF</strong> — Indonesian Throughflow</li>
+          <li><strong>CS/DS</strong> — Cross/Downstream current</li>
+        </ul>
+      </div>
+      <div>
+        <h4>🤖 Machine Learning</h4>
+        <ul>
+          <li><strong>LSTM</strong> — Long Short-Term Memory</li>
+          <li><strong>ConvLSTM</strong> — Convolutional LSTM</li>
+          <li><strong>RMSE</strong> — Root Mean Squared Error</li>
+          <li><strong>MAE</strong> — Mean Absolute Error</li>
+          <li><strong>R²</strong> — Coefficient of Determination</li>
+          <li><strong>SHAP</strong> — Feature importance tool</li>
+        </ul>
+      </div>
+      <div>
+        <h4>🛠️ Tools</h4>
+        <ul>
+          <li><strong>PyTorch</strong> — DL framework</li>
+          <li><strong>Lightning</strong> — Simplifies PyTorch training</li>
+          <li><strong>Kedro</strong> — ML pipeline framework</li>
+          <li><strong>MLflow</strong> — Experiment tracking</li>
+          <li><strong>Milvus</strong> — Vector database for KNN search</li>
+          <li><strong>FES2022</strong> — Tide model</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== OCEANOGRAPHY ========== -->
+<div id="page-ocean" class="page">
+  <div class="section-header">
+    <h1>🌊 Oceanography Context</h1>
+    <span class="badge badge-blue">Foundation</span>
+  </div>
+
+  <div class="card">
+    <h2>🗺️ Study Area: Indonesian Straits</h2>
+    <p>The project focuses on two key Indonesian straits that are part of the <strong>Indonesian Throughflow (ITF)</strong> — one of the most important ocean current systems on Earth.</p>
+    <div class="grid-2">
+      <div>
+        <h3>🌊 Sunda Strait (Bada site)</h3>
+        <span class="badge badge-blue">105.8–106.0°E, 6.0–5.8°S</span>
+        <ul style="margin-top:8px">
+          <li>Located between Java & Sumatra islands</li>
+          <li>Clear <strong>stream-like</strong> flow (bidirectional SW/NE)</li>
+          <li>Dominant tidal pattern: <strong>Diurnal (24h period)</strong></li>
+          <li>Main flow: SW direction (March–Nov), NE during Australian monsoon</li>
+          <li>Relatively homogeneous bathymetry</li>
+        </ul>
+      </div>
+      <div>
+        <h3>🌊 Lombok Strait (Sega site)</h3>
+        <span class="badge badge-teal">115.5–115.8°E, 8.75–8.47°S</span>
+        <ul style="margin-top:8px">
+          <li>Located between Bali & Lombok islands</li>
+          <li>More complex due to <strong>Nusa Penida Island bifurcation</strong></li>
+          <li>Dominant tidal pattern: <strong>Mixed semi-diurnal (12h period)</strong></li>
+          <li>Two distinct branches: eastern (>115.625°E) and western</li>
+          <li>Part of the main ITF pathway (Pacific → Indian Ocean)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card secondary">
+      <h2>🌬️ Indonesian Monsoon System</h2>
+      <p>The seasonal reversal of winds drives large-scale current patterns in the study areas.</p>
+      <table>
+        <tr><th>Season</th><th>Months</th><th>Wind Direction</th><th>Current Effect</th></tr>
+        <tr><td>Australian Monsoon</td><td>Dec–Feb</td><td>NW → SE</td><td>NE current flow</td></tr>
+        <tr><td>Transition (Aus→Asia)</td><td>Mar–May</td><td>Mixed</td><td>SW dominant</td></tr>
+        <tr><td>Asian Monsoon</td><td>Jun–Aug</td><td>SE → NW</td><td>SW current flow</td></tr>
+        <tr><td>Transition (Asia→Aus)</td><td>Sep–Nov</td><td>Mixed</td><td>SW dominant</td></tr>
+      </table>
+      <div class="callout tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-text">For the model, we encode seasons using <strong>cos/sin of day-of-year</strong> so the cyclic nature is captured correctly!</div>
+      </div>
+    </div>
+    <div class="card accent">
+      <h2>🌊 Indonesian Throughflow (ITF)</h2>
+      <p>The ITF is the only tropical passage connecting two major ocean basins — transporting warm, low-salinity Pacific water into the Indian Ocean.</p>
+      <ul>
+        <li>Flows through Indonesian archipelago (Pacific → Indian Ocean)</li>
+        <li>Lombok Strait is a <strong>major ITF pathway</strong></li>
+        <li>Affects: regional climate, monsoons, global heat transport</li>
+        <li>Seasonal variability linked to monsoon cycles</li>
+        <li>ITF drives the dominant <strong>seasonal (low-frequency)</strong> current component</li>
+      </ul>
+      <div class="callout info">
+        <div class="callout-icon">📊</div>
+        <div class="callout-text">In our data analysis, SSH gradient (Java Sea north vs Indian Ocean south) is a strong predictor of the <strong>non-tidal downstream current</strong> (R ≈ 0.80)!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌊 Ocean Current Decomposition</h2>
+    <p>Currents are decomposed into two components for better analysis and modeling:</p>
+    <div class="grid-2">
+      <div>
+        <h3>Classical (U, V) Decomposition</h3>
+        <ul>
+          <li><strong>U component</strong> — East-West velocity (m/s)</li>
+          <li><strong>V component</strong> — North-South velocity (m/s)</li>
+          <li>Standard geographic coordinate system</li>
+        </ul>
+        <div class="formula">U = east-west velocity (positive = eastward)<br>V = north-south velocity (positive = northward)</div>
+      </div>
+      <div>
+        <h3>Downstream / Cross-stream (DS, CS)</h3>
+        <ul>
+          <li><strong>DS</strong> — Along the main flow axis of the strait</li>
+          <li><strong>CS</strong> — Perpendicular to main flow</li>
+          <li>More <strong>physically meaningful</strong> for strait dynamics</li>
+          <li>Rotation angle based on median current direction</li>
+        </ul>
+        <div class="formula">Rotation angle (Sunda) ≈ 45.21° clockwise from North<br>Rotation angle (Lombok) ≈ 53.06° clockwise from North</div>
+      </div>
+    </div>
+
+    <h3>🔬 Tidal vs Non-Tidal Decomposition</h3>
+    <p>Currents are also separated into tidal (high-frequency) and non-tidal (residual) components using filters:</p>
+    <div class="grid-2">
+      <div class="diagram">
+        <strong>High-pass filter → Tidal signal</strong><br>
+        (period &lt; 72h: captures tidal oscillations at 12h/24h)
+      </div>
+      <div class="diagram">
+        <strong>Low-pass filter → Non-tidal signal</strong><br>
+        (period &gt; 72h: captures slow seasonal/ITF variations)
+      </div>
+    </div>
+    <div class="callout tip">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-text"><strong>Why?</strong> After removing tides, the correlation between SSH gradient and the remaining (non-tidal) current jumps from 0.53 to 0.80! This shows that different variables drive different timescales.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📡 HF Radar — What is it?</h2>
+    <div class="grid-2">
+      <div>
+        <h3>How it works</h3>
+        <ul>
+          <li>Transmits radio waves (3–30 MHz) over the sea surface</li>
+          <li>Measures Doppler shift of reflected waves → surface current velocity</li>
+          <li>Coverage: typically up to 200 km radius</li>
+          <li>Output: 2D current field (U and V components)</li>
+        </ul>
+        <h3>UC1 Data specs</h3>
+        <table>
+          <tr><th>Parameter</th><th>Value</th></tr>
+          <tr><td>Spatial resolution</td><td>~1 km (0.009°)</td></tr>
+          <tr><td>Temporal resolution</td><td>10 minutes</td></tr>
+          <tr><td>Study periods</td><td>Apr 2023 – Dec 2025</td></tr>
+          <tr><td>Sites</td><td>Bada (Sunda) & Sega (Lombok)</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>Common problems</h3>
+        <ul>
+          <li>⚠️ <strong>Temporal gaps</strong> — hardware failures, maintenance</li>
+          <li>⚠️ <strong>Spatial gaps</strong> — land obstacles, coverage limits</li>
+          <li>⚠️ <strong>Resolution change</strong> — switched from 1h to 10min in May 2023</li>
+          <li>⚠️ <strong>3-month gap</strong> around December 2023 (both sites)</li>
+        </ul>
+        <div class="callout warn">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-text">These gaps are exactly why we need ML! When radar is down for several days, we need a model to fill in the missing data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ML BASICS ========== -->
+<div id="page-ml-basics" class="page">
+  <div class="section-header">
+    <h1>🧠 Machine Learning & Deep Learning Basics</h1>
+    <span class="badge badge-orange">Core Theory</span>
+  </div>
+
+  <div class="card">
+    <h2>🤔 What is Machine Learning?</h2>
+    <p>Traditional programming: <em>Programmer writes rules → Computer applies them</em></p>
+    <p>Machine Learning: <em>Computer learns rules from data examples</em></p>
+    <div class="diagram">
+      <strong>Traditional:</strong>
+      <div class="flow" style="margin:8px 0">
+        <div class="flow-box data">Input Data</div><span class="arrow">+</span>
+        <div class="flow-box">Rules (code)</div><span class="arrow">→</span>
+        <div class="flow-box output">Output</div>
+      </div>
+      <strong>Machine Learning:</strong>
+      <div class="flow" style="margin:8px 0">
+        <div class="flow-box data">Input Data</div><span class="arrow">+</span>
+        <div class="flow-box output">Output (answers)</div><span class="arrow">→</span>
+        <div class="flow-box model">Learned Rules</div>
+      </div>
+    </div>
+    <div class="callout tip">
+      <div class="callout-icon">🌊</div>
+      <div class="callout-text">In UC1: we give the model thousands of examples of <em>(past currents + tide + wind)</em> → <em>actual current at time t</em>. The model learns the patterns!</div>
+    </div>
+  </div>
+
+  <div class="card secondary">
+    <h2>🔧 How Neural Networks Learn — Step by Step</h2>
+    <div class="grid-2">
+      <div>
+        <h3>1. Forward Pass (Prediction)</h3>
+        <p>Input data flows through layers of neurons, each applying:</p>
+        <div class="formula">output = activation(weights × input + bias)</div>
+        <h3>2. Loss Function (Measure Error)</h3>
+        <p>Compare prediction vs. truth:</p>
+        <div class="formula">MSE = (1/n) × Σ(prediction - truth)²</div>
+        <h3>3. Backward Pass (Learn)</h3>
+        <p>Calculate how much each weight contributed to the error using <strong>backpropagation</strong> (chain rule of calculus)</p>
+        <h3>4. Gradient Descent (Update)</h3>
+        <div class="formula">weight = weight - learning_rate × gradient</div>
+        <p>Repeat for many <strong>epochs</strong> until loss is minimized!</p>
+      </div>
+      <div>
+        <h3>Key Concepts Explained Simply</h3>
+        <table>
+          <tr><th>Concept</th><th>Simple Explanation</th></tr>
+          <tr><td><strong>Epoch</strong></td><td>One full pass through all training data</td></tr>
+          <tr><td><strong>Batch</strong></td><td>Small chunk of data processed at once</td></tr>
+          <tr><td><strong>Learning Rate</strong></td><td>How big steps are during learning (too big = unstable, too small = slow)</td></tr>
+          <tr><td><strong>Overfitting</strong></td><td>Model memorizes training data but fails on new data</td></tr>
+          <tr><td><strong>Underfitting</strong></td><td>Model too simple, can't capture patterns</td></tr>
+          <tr><td><strong>Gradient</strong></td><td>Direction to adjust weights to reduce error</td></tr>
+          <tr><td><strong>Activation Function</strong></td><td>Adds non-linearity (ReLU, tanh, sigmoid)</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⏱️ Recurrent Neural Networks — Handling Time Series</h2>
+    <p>Normal neural networks can't remember the past. For time series (like ocean currents), we need networks with <strong>memory</strong>.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🌊</div>
+      <div class="callout-text">Ocean currents at time <em>t</em> strongly depend on currents at <em>t-1h, t-2h... t-24h</em>. We need the model to "remember" this history!</div>
+    </div>
+
+    <h3>🔵 LSTM — Long Short-Term Memory</h3>
+    <p>An LSTM cell has <strong>three gates</strong> that control what to remember and forget:</p>
+    <div class="lstm-cell">
+      <div class="gate forget">🚪 Forget Gate<br><small>What to discard from memory</small></div>
+      <span class="arrow">→</span>
+      <div class="gate input">➕ Input Gate<br><small>What new info to store</small></div>
+      <span class="arrow">→</span>
+      <div class="gate output">📤 Output Gate<br><small>What to output now</small></div>
+      <span class="arrow">→</span>
+      <div class="gate" style="border-color:var(--accent);color:#a07000">🧠 Cell State<br><small>Long-term memory</small></div>
+    </div>
+
+    <h3>📐 Why LSTM for UC1?</h3>
+    <ul>
+      <li>Autocorrelation shows currents have <strong>24-hour cyclic pattern</strong> → LSTM can capture this</li>
+      <li>Proven best performer in literature (outperforms RF, FFNN, classical methods)</li>
+      <li>Can handle variable-length look-back windows</li>
+      <li>Input shape: <code>(batch_size, lookback_time, features)</code></li>
+    </ul>
+  </div>
+
+  <div class="card accent">
+    <h2>🗺️ ConvLSTM — Spatial + Temporal Together</h2>
+    <p>HF Radar gives us a 2D spatial map at each timestep. Regular LSTM ignores spatial structure. <strong>ConvLSTM</strong> combines convolutions with LSTM gates.</p>
+
+    <div class="grid-2">
+      <div>
+        <h3>Regular LSTM limitation</h3>
+        <p>Flattens 2D spatial grid → loses spatial relationships between neighboring pixels</p>
+        <div class="code-block">
+# LSTM input shape:
+# (batch, time, channels × height × width)
+# Spatial info LOST after flattening
+        </div>
+      </div>
+      <div>
+        <h3>ConvLSTM advantage</h3>
+        <p>Gates use convolutions → preserves 2D spatial structure throughout processing</p>
+        <div class="code-block">
+# ConvLSTM input shape:
+# (batch, time, channels, height, width)
+# Spatial info PRESERVED!
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🏆</div>
+      <div class="callout-text">Literature shows: ConvLSTM > CNN-GRU > LSTM for spatiotemporal ocean current prediction (Jingjing Liu, 2022). Adding temporal attention further reduces MAE by 50%+!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>👁️ Attention Mechanism</h2>
+    <p>Not all past timesteps are equally important. Attention lets the model <strong>focus on the most relevant moments in history</strong>.</p>
+    <div class="diagram">
+      <strong>Temporal Attention Workflow</strong>
+      <div class="flow" style="margin:12px 0">
+        <div class="flow-box data">All ConvLSTM<br>outputs (t₀...tₙ)</div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">Compute<br>attention weights<br>(softmax)</div>
+        <span class="arrow">→</span>
+        <div class="flow-box">Weighted<br>sum of outputs</div>
+        <span class="arrow">→</span>
+        <div class="flow-box output">Context<br>vector</div>
+        <span class="arrow">→</span>
+        <div class="flow-box output">Prediction</div>
+      </div>
+    </div>
+    <p>The model learns: "when predicting current at time <em>t</em>, the state 12 hours ago matters more than 5 minutes ago" — because of tidal periodicity!</p>
+  </div>
+
+  <div class="card success">
+    <h2>📊 Training / Validation / Test Split — Critical Concept</h2>
+    <div class="grid-3">
+      <div>
+        <h3>🏋️ Training Set</h3>
+        <p>Data the model learns from. Weights are updated based on this.</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:65%;background:#3b82f6"></div></div>
+        <small>~65% of data</small>
+      </div>
+      <div>
+        <h3>✅ Validation Set</h3>
+        <p>Used during training to check generalization and tune hyperparameters. <em>Never used to update weights!</em></p>
+        <div class="progress-bar"><div class="progress-fill" style="width:15%;background:var(--accent)"></div></div>
+        <small>~15% of data</small>
+      </div>
+      <div>
+        <h3>🎯 Test Set</h3>
+        <p>Final evaluation. Only touched once, after training is complete. The true performance metric!</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:20%;background:var(--success)"></div></div>
+        <small>~20% of data</small>
+      </div>
+    </div>
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-text"><strong>Data Leakage Warning!</strong> For time series, <strong>never use random splitting</strong>! Future data must not leak into training. UC1 uses temporal chunks distributed across seasons to ensure diversity without leakage.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DATA ========== -->
+<div id="page-data" class="page">
+  <div class="section-header">
+    <h1>📊 Data, Features & Preprocessing</h1>
+    <span class="badge badge-green">UC1 Specific</span>
+  </div>
+
+  <div class="card">
+    <h2>📥 Input Variables Summary</h2>
+    <table>
+      <tr><th>Variable</th><th>Source</th><th>Resolution (space)</th><th>Temporal</th><th>Why included?</th></tr>
+      <tr><td><strong>Current (U, V)</strong></td><td>HF Radar (MMS)</td><td>~1 km</td><td>10 min</td><td>Main target + past values as input</td></tr>
+      <tr><td><strong>Tide</strong></td><td>FES2022 model</td><td>~1 km</td><td>10 min</td><td>Dominant driver (12/24h periodicity)</td></tr>
+      <tr><td><strong>SSH gradient</strong></td><td>CMEMS Mercator</td><td>~9 km (1 point)</td><td>1 hour</td><td>R=0.80 with non-tidal DS current!</td></tr>
+      <tr><td><strong>Wind (CS, DS)</strong></td><td>ERA5 reanalysis</td><td>~28 km (1 point)</td><td>1 hour</td><td>Drives 24h seasonal pattern (R~0.46)</td></tr>
+      <tr><td><strong>Bathymetry</strong></td><td>BATNAS</td><td>~200 m</td><td>Static</td><td>Shapes current patterns (important in Lombok)</td></tr>
+      <tr><td><strong>SST (Ostia)</strong></td><td>Ostia satellite</td><td>~0.5 km (1 point)</td><td>Daily</td><td>R=0.35 with non-tidal CS (Sunda only)</td></tr>
+      <tr><td><strong>Lat/Lon</strong></td><td>Coordinate</td><td>—</td><td>Static</td><td>Spatial context for the model</td></tr>
+      <tr><td><strong>Time (cos/sin)</strong></td><td>Computed</td><td>—</td><td>—</td><td>Captures cyclic seasonality/diurnal patterns</td></tr>
+    </table>
+    <div class="callout info">
+      <div class="callout-icon">❌</div>
+      <div class="callout-text"><strong>NOT included:</strong> SSS (low correlation), time-of-day (no notable correlation), gridded SSH/SST (single-point equivalent works fine).</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent">
+      <h2>🔍 Key Data Analysis Findings</h2>
+      <h3>Correlation Analysis (Linear)</h3>
+      <ul>
+        <li>SSH gradient: highest correlation with DS current</li>
+        <li>Tide: strongly drives seasonal (24h) oscillations</li>
+        <li>Wind: explains 24h diurnal pattern of CS component</li>
+        <li>Bathymetry: correlated with longitude → important in Lombok</li>
+      </ul>
+      <h3>SHAP Analysis (Non-linear)</h3>
+      <p>Used XGBoost + SHAP to find non-linear feature importance. Top features:</p>
+      <ul>
+        <li><strong>Sunda DS:</strong> SSH gradient &gt; tide &gt; hour &gt; day of year</li>
+        <li><strong>Sunda CS:</strong> longitude &gt; day_of_year_cos &gt; latitude</li>
+        <li><strong>Lombok:</strong> bathymetry very influential (unlike Sunda)</li>
+      </ul>
+      <div class="callout tip">
+        <div class="callout-icon">💡</div>
+        <div class="callout-text">SHAP = "SHapley Additive exPlanations" — game theory-based method to explain which features push a prediction higher or lower.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>⏳ Autocorrelation & Lookback</h2>
+      <h3>What autocorrelation tells us</h3>
+      <p>How much current at time <em>t</em> is correlated with current at time <em>t - lag</em>.</p>
+      <div class="diagram">
+        <strong>Finding: 24-hour cyclical autocorrelation!</strong><br>
+        <div class="flow" style="margin:10px 0">
+          <div class="flow-box data">t</div>
+          <span class="arrow">≈</span>
+          <div class="flow-box data">t-24h</div>
+          <span class="arrow">≈</span>
+          <div class="flow-box data">t-48h</div>
+        </div>
+        <small>Due to semi-diurnal/diurnal tides</small>
+      </div>
+      <h3>Lookback Decision</h3>
+      <ul>
+        <li>Autocorrelation remains significant up to 14 days</li>
+        <li>Practical choice: <strong>24 hours lookback</strong> for currents</li>
+        <li>Longer lookback → fewer training samples available</li>
+        <li>Tide input: t to t-24h (10min resolution), t-24h to t-48h (hourly)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🩹 Gap Filling Strategy</h2>
+    <p>Before training, small gaps in HF Radar data are filled to maximize training samples. This is a <em>preprocessing step</em>, not the main ML task!</p>
+    <div class="diagram">
+      <strong>Gap Filling Decision Tree</strong>
+      <div style="text-align:left; display:inline-block; margin-top:10px">
+        <div>📋 <strong>Spatio-temporal gap</strong> (few pixels missing):</div>
+        <div style="padding-left:16px">→ Temporal interp. if gap ≤ 80 min (Sunda) / 50 min (Lombok)</div>
+        <div style="padding-left:16px">→ Spatial extrapolation (Gauss-Seidel) if still missing but valid neighbors exist</div>
+        <div style="padding-left:16px">→ Remove timestamp if too large</div>
+        <div style="margin-top:8px">📋 <strong>Temporal gap</strong> (entire map missing):</div>
+        <div style="padding-left:16px">→ Temporal interpolation if gap ≤ 80 min (Sunda) / 50 min (Lombok)</div>
+        <div style="padding-left:16px">→ Ignore otherwise (these become the ML model's task!)</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:12px">
+      <div class="callout info">
+        <div class="callout-icon">📊</div>
+        <div class="callout-text"><strong>Sunda:</strong> Threshold 80 min → RMSE &lt; 10 cm/s</div>
+      </div>
+      <div class="callout info">
+        <div class="callout-icon">📊</div>
+        <div class="callout-text"><strong>Lombok:</strong> Threshold 50 min → RMSE &lt; 10 cm/s</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card secondary">
+    <h2>📏 Data Normalization</h2>
+    <p>Neural networks learn better when all inputs are on similar scales. We use <strong>Z-score standardization</strong>:</p>
+    <div class="formula">y_normalized = (y - μ) / σ</div>
+    <div class="grid-2">
+      <div>
+        <h3>Why Z-score over Min-Max?</h3>
+        <ul>
+          <li>Robust to outliers (doesn't compress range due to extremes)</li>
+          <li>Centers data around 0 with unit variance</li>
+          <li>Better for normally distributed data (which our variables are!)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>⚠️ Critical Rule</h3>
+        <div class="callout warn">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-text"><strong>Compute μ and σ on TRAINING set only!</strong> Then apply the same values to validation and test. Otherwise, you leak information from the future!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📅 Train/Val/Test Splitting Strategy</h2>
+    <p>For time series with seasonal variation, we use <strong>temporal chunks distributed across seasons</strong>:</p>
+    <div class="diagram">
+      <table style="font-size:0.78rem;width:100%">
+        <tr>
+          <th style="background:#3b82f6">TRAIN</th><th style="background:#f59e0b;color:#333">VAL</th>
+          <th style="background:#10b981">TEST</th><th style="background:#3b82f6">TRAIN</th>
+          <th style="background:#f59e0b;color:#333">VAL</th><th style="background:#10b981">TEST</th>
+        </tr>
+        <tr>
+          <td style="background:#dbeafe">Btw Aus+Asian</td><td style="background:#fef3c7">Asian</td>
+          <td style="background:#dcfce7">Btw Asian+Aus</td><td style="background:#dbeafe">Australian</td>
+          <td style="background:#fef3c7">Btw Aus+Asian</td><td style="background:#dcfce7">Asian</td>
+        </tr>
+      </table>
+      <small style="margin-top:8px; display:block">Each seasonal period is represented in all three splits → model trained on all ocean conditions</small>
+    </div>
+    <p>First <strong>48 hours</strong> of each split are removed to prevent information leakage between adjacent chunks.</p>
+  </div>
+</div>
+
+<!-- ========== MODELS ========== -->
+<div id="page-models" class="page">
+  <div class="section-header">
+    <h1>🤖 Model Architectures</h1>
+    <span class="badge badge-purple">Deep Learning</span>
+  </div>
+
+  <div class="card">
+    <h2>🗺️ Model Selection Journey</h2>
+    <div class="diagram">
+      <div class="flow">
+        <div class="flow-box">Analogue Research<br><small>Baseline (KNN)</small></div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">LSTM<br><small>Temporal</small></div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">ConvLSTM<br><small>Spatio-temporal</small></div>
+        <span class="arrow">→</span>
+        <div class="flow-box output">ConvLSTM + Attention<br><small>Best performance</small></div>
+      </div>
+    </div>
+    <table>
+      <tr><th>Model</th><th>Captures Temporal?</th><th>Captures Spatial?</th><th>Complexity</th><th>Literature Performance</th></tr>
+      <tr><td>KNN Analogue</td><td>✅ Partial</td><td>✅ Partial</td><td>Low</td><td>Baseline ~30 cm/s RMSE</td></tr>
+      <tr><td>LSTM</td><td>✅ Yes</td><td>❌ No (flattened)</td><td>Medium</td><td>Best pure-temporal model</td></tr>
+      <tr><td>ConvLSTM</td><td>✅ Yes</td><td>✅ Yes</td><td>Higher</td><td>Slightly better than CNN-GRU</td></tr>
+      <tr><td>ConvLSTM + Attention</td><td>✅ Yes</td><td>✅ Yes</td><td>Highest</td><td>MAE reduced 50%+ vs ConvLSTM</td></tr>
+    </table>
+  </div>
+
+  <div class="card secondary">
+    <h2>🏁 Baseline: Analogue Research (KNN)</h2>
+    <p>Before deep learning, we establish a baseline using <strong>K-Nearest Neighbors (KNN)</strong>. This is the "dumb" method we need to beat!</p>
+    <div class="diagram">
+      <strong>How Analogue Research Works</strong>
+      <div class="flow" style="margin:12px 0">
+        <div class="flow-box data">Current situation<br>(tide, wind, SSH, past current)</div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">Search Milvus DB<br>for K similar past situations</div>
+        <span class="arrow">→</span>
+        <div class="flow-box">Get currents from<br>those K moments</div>
+        <span class="arrow">→</span>
+        <div class="flow-box output">Weighted average<br>= Prediction</div>
+      </div>
+    </div>
+    <h3>Implementation with Milvus</h3>
+    <ul>
+      <li><strong>Milvus</strong> = vector database optimized for similarity search</li>
+      <li>Uses <strong>Hybrid Search</strong> across multiple variables with different weights</li>
+      <li>Searches only past data (at least 24h ago) to avoid data leakage</li>
+      <li>Diversity filter: neighbors must be &gt;1h apart (no redundant analogues)</li>
+    </ul>
+    <div class="callout warn">
+      <div class="callout-icon">📉</div>
+      <div class="callout-text"><strong>Baseline results:</strong> Sunda RMSE ~30 cm/s, Lombok RMSE up to 70 cm/s (v component). Deep learning must beat this!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⏱️ LSTM Architecture for UC1</h2>
+    <div class="grid-2">
+      <div>
+        <h3>Architecture design</h3>
+        <div class="code-block">
+Input: (batch, lookback, channels × H × W)
+         ↓ Flatten spatial dims
+LSTM layers (process temporal sequence)
+         ↓ Take last hidden state
+Conv2D (1×1) decoder
+         ↓
+Output: (batch, lead_time, 2, H, W)
+         [2 = U and V current components]
+        </div>
+        <h3>Limitation</h3>
+        <p>Spatial information is <strong>lost</strong> during flattening. The model treats neighboring pixels as unrelated features.</p>
+      </div>
+      <div>
+        <h3>When LSTM works well</h3>
+        <ul>
+          <li>Pure time-series prediction with scalar inputs</li>
+          <li>When spatial context is encoded via coordinates (lat/lon)</li>
+          <li>First step before trying ConvLSTM</li>
+        </ul>
+        <div class="callout info">
+          <div class="callout-icon">📐</div>
+          <div class="callout-text">The LSTM cell state acts like a "conveyor belt" — it carries long-term memory (seasonal patterns) while gate activations handle short-term updates (tidal cycles).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent">
+    <h2>🗺️ ConvLSTM Architecture for UC1</h2>
+    <div class="grid-2">
+      <div>
+        <h3>Key innovation vs LSTM</h3>
+        <p>All matrix multiplications inside LSTM gates are replaced with <strong>convolutions</strong>:</p>
+        <div class="code-block">
+# Regular LSTM gate:
+f = sigmoid(W_f × [h, x] + b_f)
+
+# ConvLSTM gate:
+f = sigmoid(W_f ⊛ [h, x] + b_f)
+# ⊛ = convolution operation
+        </div>
+        <p>Result: hidden state shape is <code>(batch, height, width, hidden)</code> → <strong>spatially aware!</strong></p>
+      </div>
+      <div>
+        <h3>Full model pipeline</h3>
+        <div class="diagram">
+          <div class="flow" style="flex-direction:column;gap:6px">
+            <div class="flow-box data">Input: (B, T, C, H, W)</div>
+            <span class="arrow">↓</span>
+            <div class="flow-box model">ConvLSTM layers<br><small>Process T timesteps, keep spatial dims</small></div>
+            <span class="arrow">↓</span>
+            <div class="flow-box">Select last hidden state<br><small>(B, hidden, H, W)</small></div>
+            <span class="arrow">↓</span>
+            <div class="flow-box model">[Optional] Temporal Attention<br><small>Weight all T outputs</small></div>
+            <span class="arrow">↓</span>
+            <div class="flow-box output">Conv2D decoder<br><small>(B, LT×2, H, W) → currents</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Training Approaches</h2>
+    <div class="grid-3">
+      <div>
+        <h3>1️⃣ One-Pass Model</h3>
+        <span class="badge badge-green">Simplest</span>
+        <div class="diagram">
+          Input (t₀...t) → Model → Output (t+LT)
+        </div>
+        <ul>
+          <li>Direct prediction at fixed lead time</li>
+          <li>Simple to train</li>
+          <li>❌ Separate model per lead time</li>
+          <li>❌ Struggles at long horizons</li>
+        </ul>
+      </div>
+      <div>
+        <h3>2️⃣ Iterative Model</h3>
+        <span class="badge badge-orange">Medium</span>
+        <div class="diagram">
+          Train: predict 1 step<br>Infer: feed prediction back as input → roll to 24h
+        </div>
+        <ul>
+          <li>Train once, infer at any horizon</li>
+          <li>✅ Flexible lead time</li>
+          <li>❌ Error accumulation over steps</li>
+          <li>❌ Train/infer distribution mismatch</li>
+        </ul>
+      </div>
+      <div>
+        <h3>3️⃣ Auto-regressive</h3>
+        <span class="badge badge-purple">Most robust</span>
+        <div class="diagram">
+          Train: use own predictions as inputs → robust to imperfect inputs
+        </div>
+        <ul>
+          <li>Trained on its own outputs → handles imperfect inputs</li>
+          <li>✅ Best for long horizons</li>
+          <li>❌ More complex training</li>
+          <li>❌ Can be unstable</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>🔁 Residual Learning — A Smart Enhancement</h3>
+    <div class="grid-2">
+      <div>
+        <div class="diagram">
+          <strong>Classical:</strong><br>
+          Input (past) → Model → Predicted current (full value)
+        </div>
+      </div>
+      <div>
+        <div class="diagram">
+          <strong>Residual:</strong><br>
+          Input (past) → Model → <em>Change (Δ)</em> → Add to last known current
+        </div>
+      </div>
+    </div>
+    <p>Residual learning is especially useful in iterative/auto-regressive settings — errors are smaller when predicting <em>changes</em> rather than absolute values!</p>
+  </div>
+</div>
+
+<!-- ========== METRICS ========== -->
+<div id="page-metrics" class="page">
+  <div class="section-header">
+    <h1>📏 Evaluation Metrics</h1>
+    <span class="badge badge-teal">Validation</span>
+  </div>
+
+  <div class="card">
+    <h2>📐 Eulerian Metrics — Single Component</h2>
+    <p>These metrics compare <strong>predicted vs true current at the same time and location</strong> (Eulerian framework = fixed point in space).</p>
+
+    <div class="grid-2">
+      <div>
+        <h3>RMSE — Root Mean Squared Error</h3>
+        <div class="formula">RMSE = √(1/n × Σ(y_pred - y_truth)²)</div>
+        <ul>
+          <li>Units: same as the variable (m/s for currents)</li>
+          <li>Penalizes large errors heavily (due to squaring)</li>
+          <li>Most commonly reported metric in literature</li>
+          <li>Baseline RMSE: ~30 cm/s (Sunda KNN)</li>
+        </ul>
+
+        <h3>MAE — Mean Absolute Error</h3>
+        <div class="formula">MAE = (1/n) × Σ|y_pred - y_truth|</div>
+        <ul>
+          <li>More robust to outliers than RMSE</li>
+          <li>Same units as variable</li>
+          <li>Easier to interpret as "average error"</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Bias</h3>
+        <div class="formula">BIAS = (1/n) × Σ(y_truth - y_pred)</div>
+        <ul>
+          <li>Positive bias: model underpredicts</li>
+          <li>Negative bias: model overpredicts</li>
+          <li>Important for operational use (systematic errors)</li>
+        </ul>
+
+        <h3>R² and RSE</h3>
+        <div class="formula">R² = 1 - Σ(y_truth - y_pred)² / Σ(y_truth - ȳ)²</div>
+        <div class="formula">RSE = Σ(y_truth - y_pred)² / Σ(y_truth - ȳ)²</div>
+        <ul>
+          <li>R² = 1.0: perfect model | R² = 0: predicts mean | R² &lt; 0: worse than mean</li>
+          <li>RSE = 1 - R² (fraction of variance unexplained)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card secondary">
+    <h2>🧭 Vectorial Metrics — Direction & Magnitude</h2>
+    <p>Since currents are vectors (direction + magnitude), component-wise metrics are not enough. We also evaluate the full vector.</p>
+
+    <div class="grid-2">
+      <div>
+        <h3>Current Direction</h3>
+        <div class="formula">DIR = (90 - atan2(u, v) × 180/π) mod 360</div>
+        <div class="formula">RMSE_dir = √(1/n × Σ Δdir²)<br>where Δdir accounts for circular wrapping (0°=360°)</div>
+        <p>A model that predicts the right magnitude but wrong direction (e.g., 180° off!) would still look OK on U/V metrics but fail direction RMSE.</p>
+      </div>
+      <div>
+        <h3>Current Magnitude (Norm)</h3>
+        <div class="formula">NORM = √(u² + v²)</div>
+        <div class="formula">RMSE_norm = √(1/n × Σ(NORM_pred - NORM_truth)²)</div>
+
+        <h3>Threshold Accuracy</h3>
+        <div class="formula">Accuracy = (1/n) × Σ[NORM_truth ∈ [min,max] = NORM_pred ∈ [min,max]]</div>
+        <p>Binary metric: "is the current in the right intensity range?" Useful for operational warnings.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent">
+    <h2>🚢 Lagrangian Metrics — Particle Trajectories</h2>
+    <p>Eulerian metrics only compare values at fixed points. But for real applications (search & rescue, oil spill tracking), we care about where things <em>go</em>!</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🚢</div>
+      <div class="callout-text"><strong>Lagrangian</strong> = follows moving particles through the flow. A model with good Eulerian metrics might still fail at Lagrangian tasks if it misses coherent structures!</div>
+    </div>
+
+    <h3>NCLS Skill Score</h3>
+    <p><strong>N</strong>ormalized <strong>C</strong>umulative <strong>L</strong>agrangian <strong>S</strong>eparation</p>
+    <div class="formula">NCLS = Σ dᵢ / Σ l₀ᵢ (sum of separation distances / sum of observed trajectory lengths)</div>
+    <div class="formula">Skill Score = 1 - NCLS/n  if NCLS &lt; n,  else  0<br>(n = tolerance threshold)</div>
+    <ul>
+      <li>Score = 1.0: perfect trajectory prediction</li>
+      <li>Score = 0.0: trajectory error equals tolerance threshold</li>
+      <li>Computed for 4 drift durations: <strong>3h, 6h, 12h, 24h</strong></li>
+    </ul>
+
+    <h3>Implementation</h3>
+    <ul>
+      <li>Particles released from every grid cell, every 10 minutes</li>
+      <li>Tracked using <strong>4th-order Runge-Kutta integration</strong> (Parcels library)</li>
+      <li>Pairs that exit the study area are excluded (limitation!)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>📊 Visualizations Used</h2>
+    <div class="grid-2">
+      <div>
+        <h3>Spatial diagnostics</h3>
+        <ul>
+          <li><strong>RMSE map</strong> — error per pixel over full lead-time window</li>
+          <li><strong>Bias map</strong> — where does model over/underpredict?</li>
+          <li><strong>Quiver plots</strong> — vector field visualization</li>
+        </ul>
+        <h3>Temporal diagnostics</h3>
+        <ul>
+          <li><strong>Time series plots</strong> — prediction vs truth over time</li>
+          <li><strong>Error vs lead time</strong> — how fast does accuracy degrade?</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Statistical diagnostics</h3>
+        <ul>
+          <li><strong>Scatter plots</strong> — predicted vs true values</li>
+          <li><strong>Rotary spectra</strong> — frequency domain analysis</li>
+          <li><strong>Power spectral density</strong> — identify dominant periods</li>
+        </ul>
+        <h3>Training diagnostics</h3>
+        <ul>
+          <li><strong>Loss curves</strong> — train vs validation loss over epochs</li>
+          <li><strong>Skill score histograms</strong> — Lagrangian performance distribution</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PIPELINE ========== -->
+<div id="page-pipeline" class="page">
+  <div class="section-header">
+    <h1>⚙️ Pipeline, Tools & Production</h1>
+    <span class="badge badge-blue">Engineering</span>
+  </div>
+
+  <div class="card">
+    <h2>🔄 Full Development Workflow</h2>
+    <div class="diagram">
+      <div class="flow">
+        <div class="flow-box data">📚 Literature Review</div>
+        <span class="arrow">→</span>
+        <div class="flow-box data">📥 Data Extraction</div>
+        <span class="arrow">→</span>
+        <div class="flow-box">🔍 Data Analysis</div>
+        <span class="arrow">→</span>
+        <div class="flow-box">⚙️ Preprocessing</div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">📏 Metrics Setup</div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">🏁 Baseline</div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">🤖 Model Dev.</div>
+        <span class="arrow">→</span>
+        <div class="flow-box output">🔁 Iterate</div>
+        <span class="arrow">→</span>
+        <div class="flow-box output">🚀 Production</div>
+      </div>
+    </div>
+    <p>This is an <strong>iterative</strong> process. After evaluating results, we go back to modify architectures, add variables, or adjust training strategies.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent">
+      <h2>🐍 PyTorch Lightning</h2>
+      <p>Removes boilerplate, organizes DL code into standard structure.</p>
+      <div class="code-block">
+class CurrentModel(LightningModule):
+    def __init__(self, hidden_size):
+        self.model = ConvLSTM(hidden_size)
+    
+    def forward(self, x):
+        return self.model(x)
+    
+    def training_step(self, batch, idx):
+        x, y = batch
+        y_hat = self(x)
+        loss = F.mse_loss(y_hat, y)
+        self.log("train_loss", loss)
+        return loss
+    
+    def configure_optimizers(self):
+        return Adam(self.parameters(), lr=1e-3)
+      </div>
+      <h3>Three key components:</h3>
+      <ul>
+        <li><strong>LightningModule</strong> — model + training logic</li>
+        <li><strong>Trainer</strong> — handles training loop, GPU, logging</li>
+        <li><strong>DataModule</strong> — data loading, splitting, preprocessing</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>📊 MLflow Experiment Tracking</h2>
+      <p>Track every experiment: parameters, metrics, model artifacts.</p>
+      <div class="code-block">
+import mlflow
+
+with mlflow.start_run():
+    # Log parameters
+    mlflow.log_param("lr", 0.001)
+    mlflow.log_param("hidden_size", 64)
+    mlflow.log_param("lookback", 144)  # 24h at 10min
+    
+    # Log metrics
+    mlflow.log_metric("train_rmse", train_rmse)
+    mlflow.log_metric("val_rmse", val_rmse)
+    
+    # Log model
+    mlflow.pytorch.log_model(model, "model")
+      </div>
+      <h3>Why it matters?</h3>
+      <ul>
+        <li>Compare 20+ experiments side by side</li>
+        <li>Know which config produced best results</li>
+        <li>Reproducibility: re-run any past experiment</li>
+        <li>Team collaboration (shared tracking server)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card secondary">
+    <h2>🏗️ Kedro — Structured ML Pipelines</h2>
+    <p>Kedro organizes code into reproducible, modular <strong>nodes and pipelines</strong>.</p>
+    <div class="grid-2">
+      <div>
+        <h3>Project structure</h3>
+        <div class="code-block">
+uc1_project/
+├── conf/           # Configs (YAML)
+│   ├── parameters/ # Model hyperparams
+│   └── catalog/    # Data paths
+├── src/
+│   ├── nodes/      # Individual functions
+│   └── pipelines/  # Chained nodes
+│       ├── data_extraction/
+│       ├── preprocessing/
+│       ├── training/
+│       └── evaluation/
+└── data/
+    ├── raw/        # Input data
+    ├── processed/  # After preprocessing
+    └── models/     # Saved checkpoints
+        </div>
+      </div>
+      <div>
+        <h3>UC1 Pipeline structure</h3>
+        <div class="diagram">
+          <div class="flow" style="flex-direction:column;gap:4px">
+            <div class="flow-box data">data_extraction</div>
+            <span class="arrow">↓</span>
+            <div class="flow-box data">data_analysis</div>
+            <span class="arrow">↓</span>
+            <div class="flow-box">preprocessing</div>
+            <span class="arrow">↓</span>
+            <div class="flow-box model">baseline (KNN/Milvus)</div>
+            <span class="arrow">↓</span>
+            <div class="flow-box model">training (ConvLSTM)</div>
+            <span class="arrow">↓</span>
+            <div class="flow-box output">evaluation (metrics)</div>
+            <span class="arrow">↓</span>
+            <div class="flow-box output">production docker</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🐳 Production Architecture</h2>
+    <p>After development, models are deployed as Docker containers for operational use at BMKG.</p>
+    <div class="diagram">
+      <div class="flow">
+        <div class="flow-box data">🐳 Docker 1<br><small>Data Extraction<br>(current, tide, wind, SSH)</small></div>
+        <span class="arrow">→</span>
+        <div class="flow-box model">🐳 Docker 2<br><small>ML Inference<br>(ConvLSTM prediction)</small></div>
+        <span class="arrow">→</span>
+        <div class="flow-box output">🐳 Docker 3<br><small>Results Export<br>(to MANDALA system)</small></div>
+      </div>
+    </div>
+    <h3>Production checks</h3>
+    <ul>
+      <li>All input variables downloaded for required dates?</li>
+      <li>No void in current time series after gap filling?</li>
+      <li>Forecast written and up-to-date?</li>
+      <li>Model performance on recent data within expected range?</li>
+    </ul>
+    <div class="callout info">
+      <div class="callout-icon">📡</div>
+      <div class="callout-text"><strong>Output spec:</strong> U, V currents at 10-minute frequency, 1 km resolution, Sunda & Lombok straits. Gap filling + 24h forecast.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== QUIZ ========== -->
+<div id="page-quiz" class="page">
+  <div class="section-header">
+    <h1>❓ Interactive Quiz</h1>
+    <span class="badge badge-red">Test Your Knowledge</span>
+  </div>
+
+  <div class="card">
+    <h2>📝 Quiz Instructions</h2>
+    <p>Click on an answer to select it. After selecting, click "Check Answer" to see if you're right — along with a detailed explanation. Try to answer <em>before</em> looking at the explanation!</p>
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-text">These questions cover topics that will be discussed during the Toulouse training. Getting them right means you're well prepared!</div>
+    </div>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div id="quiz-score" class="quiz-score"></div>
+  <button class="quiz-btn" style="display:block;margin:0 auto 20px;padding:10px 30px;font-size:1rem" onclick="showFinalScore()">🎯 Show My Score</button>
+</div>
+
+</div><!-- end container -->
+
+<button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// PAGE NAVIGATION
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// TOGGLE
+function toggle(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// QUIZ DATA
+const questions = [
+  {
+    q: "What is the primary goal of UC1 in the MMS2 project?",
+    opts: [
+      "Forecast precipitation using satellite data",
+      "Fill temporal gaps in HF Radar ocean current data and forecast currents up to 24 hours",
+      "Monitor coastal flooding using sea level data",
+      "Classify ocean water masses using temperature profiles"
+    ],
+    answer: 1,
+    explanation: "UC1 focuses specifically on using ML to estimate ocean surface currents when HF Radar has data gaps (void filling), and to forecast currents up to 24 hours ahead using the same methodology. The two study areas are Sunda Strait and Lombok Strait in Indonesia."
+  },
+  {
+    q: "The autocorrelation analysis of HF Radar currents shows a dominant 24-hour cyclical pattern. What is the main cause of this?",
+    opts: [
+      "The daily cycle of solar radiation affecting sea surface temperature",
+      "Wind patterns from the 24-hour atmospheric pressure cycle",
+      "Tidal forcing — specifically the semi-diurnal and diurnal tidal constituents",
+      "The monitoring schedule of the HF Radar equipment"
+    ],
+    answer: 2,
+    explanation: "The 24-hour periodicity in current autocorrelations is driven by tidal forcing. Sunda has a predominantly diurnal tidal pattern (24h period), while Lombok has a mixed semi-diurnal pattern (12h dominant). This is why tide is a critical input variable and why we use a 24-hour lookback for the model."
+  },
+  {
+    q: "Why do we use Z-score normalization instead of Min-Max scaling for data preprocessing in UC1?",
+    opts: [
+      "Z-score always produces values between 0 and 1",
+      "Z-score is more robust to outliers and works better with normally distributed data",
+      "Min-Max requires more computational resources",
+      "Z-score preserves the physical units of the variables"
+    ],
+    answer: 1,
+    explanation: "Z-score (standardization) subtracts the mean and divides by standard deviation, centering data at 0 with unit variance. It's preferred over Min-Max because: (1) it's robust to outliers — extreme values don't compress the scale of other data; (2) our current data follows approximately normal distribution; (3) it works well with gradient-based optimization in neural networks."
+  },
+  {
+    q: "What is the key difference between an LSTM and a ConvLSTM for ocean current prediction?",
+    opts: [
+      "LSTM is faster to train while ConvLSTM is more accurate",
+      "LSTM uses gating mechanisms while ConvLSTM uses only convolutions",
+      "ConvLSTM replaces dense matrix operations in LSTM gates with convolutions, preserving spatial structure",
+      "ConvLSTM can only handle 1D time series while LSTM handles 2D spatial data"
+    ],
+    answer: 2,
+    explanation: "In a regular LSTM, the gates (forget, input, output) use dense matrix multiplications, so the input must be flattened — losing spatial relationships. ConvLSTM replaces these with convolutional operations, meaning the hidden state maintains 2D spatial dimensions (height × width). This is crucial for HF Radar data which is a 2D spatial field at each timestep."
+  },
+  {
+    q: "In the UC1 data analysis, which variable showed the HIGHEST correlation with the non-tidal downstream current component in Lombok Strait?",
+    opts: [
+      "Sea Surface Temperature (SST)",
+      "Wind speed and direction",
+      "SSH gradient between Java Sea and Indian Ocean",
+      "Sea Surface Salinity (SSS)"
+    ],
+    answer: 2,
+    explanation: "The SSH gradient between a northern point in the Java Sea and a southern point in the Indian Ocean shows R = 0.80 correlation with the non-tidal downstream current in Lombok Strait (after removing tidal component). This makes physical sense: the pressure gradient from the high SSH in the Java Sea to lower SSH in the Indian Ocean drives the Indonesian Throughflow through Lombok Strait."
+  },
+  {
+    q: "Why is random train/validation/test splitting DANGEROUS for time series data like ocean currents?",
+    opts: [
+      "Random splits are computationally expensive for large datasets",
+      "Future observations can leak into the training set, giving artificially good performance",
+      "Random splits don't preserve the original temporal resolution",
+      "Random splits require more data preprocessing steps"
+    ],
+    answer: 1,
+    explanation: "For time series, random splits allow future data to appear in the training set. Since consecutive ocean measurements are highly correlated (especially with tidal periodicity), the model would 'see' future patterns during training and report unrealistically good validation metrics. This is called DATA LEAKAGE. In UC1, we use temporal chunks distributed across seasons, ensuring the model only trains on past data and is tested on truly unseen future periods."
+  },
+  {
+    q: "What does a SHAP (SHapley Additive exPlanations) value of +0.5 for 'SSH_gradient' in predicting downstream current mean?",
+    opts: [
+      "SSH gradient has a correlation coefficient of 0.5 with downstream current",
+      "SSH gradient contributed +0.5 m/s (after normalization) toward increasing the predicted downstream current",
+      "SSH gradient has 50% feature importance in the model",
+      "The model predicts 0.5 m/s of current when SSH gradient is present"
+    ],
+    answer: 1,
+    explanation: "SHAP values measure the contribution of each feature to a specific prediction, based on Shapley values from game theory. A SHAP value of +0.5 for SSH gradient means that, for that particular data point, SSH gradient pushed the model's prediction 0.5 units HIGHER than the baseline (average prediction). Negative SHAP values push predictions lower. The bee-swarm plots show distributions of SHAP values across all data points."
+  },
+  {
+    q: "The Analogue Research (KNN) baseline for UC1 is implemented using Milvus. What is the main limitation of this approach compared to deep learning?",
+    opts: [
+      "KNN requires too much storage space for the vector database",
+      "KNN predictions are an average of neighbors, causing smoothing that attenuates extreme current values",
+      "KNN cannot use multiple input variables simultaneously",
+      "KNN requires re-training every time new data is added"
+    ],
+    answer: 1,
+    explanation: "The fundamental limitation of KNN for regression is the SMOOTHING EFFECT: since the prediction is a weighted mean of K neighbors' values, extreme high or low values get averaged out. This means the model systematically underestimates strong currents and overestimates weak ones. Additionally, if all K neighbors lack data in a certain spatial region, the output will too. Deep learning models can potentially capture these extreme events better."
+  },
+  {
+    q: "In the UC1 preprocessing, different temporal interpolation thresholds are used for Sunda (80 min) vs Lombok (50 min). Why is Lombok more restrictive?",
+    opts: [
+      "Lombok has faster computer processing available",
+      "Lombok has more radar stations so interpolation is more accurate",
+      "Lombok has faster-changing, more complex current patterns (mixed semi-diurnal tides + Y-shaped geography) making longer interpolations less reliable",
+      "Lombok data has higher spatial resolution requiring more precise timing"
+    ],
+    answer: 2,
+    explanation: "Lombok has a more complex oceanographic environment: (1) mixed semi-diurnal tidal regime with 12h dominant period means currents change more rapidly than Sunda's 24h diurnal regime; (2) the Y-shaped geography with Nusa Penida Island creates bifurcating flow patterns; (3) RMSE analysis shows Lombok interpolation errors increase sharply after 50 minutes. Therefore, gaps over 50 minutes in Lombok cannot be reliably interpolated and must be left for the ML model to fill."
+  },
+  {
+    q: "What is the difference between 'Iterative' and 'Auto-regressive' training approaches for long-range current forecasting?",
+    opts: [
+      "Iterative trains multiple models while auto-regressive trains one model",
+      "Iterative trains on ground-truth inputs only; auto-regressive trains the model to handle its own predictions as inputs",
+      "Auto-regressive is faster to train than iterative",
+      "Iterative approach requires more GPU memory than auto-regressive"
+    ],
+    answer: 1,
+    explanation: "Key distinction: In ITERATIVE training, the model always sees real (ground-truth) data during training, then at inference uses its own predictions as inputs — creating a train/inference mismatch. In AUTO-REGRESSIVE training, the model is explicitly exposed to its own imperfect predictions during training (scheduled sampling), making it robust to accumulated errors at inference time. Auto-regressive is harder to train but performs better for long-horizon forecasts (e.g., 24h). Combined with RESIDUAL LEARNING (predicting changes instead of absolute values), auto-regressive can significantly reduce error accumulation."
+  },
+  {
+    q: "The NCLS (Normalized Cumulative Lagrangian Separation) Skill Score of 0.85 for a 6-hour drift means:",
+    opts: [
+      "85% of the predicted current values are within acceptable error range",
+      "The model has 85% accuracy in predicting current direction",
+      "The particle trajectory error is 15% of the observed trajectory length over 6 hours",
+      "The model successfully predicted 85% of all trajectories"
+    ],
+    answer: 2,
+    explanation: "The NCLS Skill Score = 1 - NCLS/n, where NCLS = total separation distance / total observed trajectory length. A score of 0.85 means NCLS = 0.15, so the cumulative separation between predicted and observed particle trajectories is 15% of the total observed distance traveled. Score = 1.0 means perfect trajectory, score = 0.0 means error equals the tolerance threshold n. This metric is critical for search-and-rescue applications where knowing where a drifting object ends up is more important than knowing the exact current velocity at each point."
+  },
+  {
+    q: "The Power Spectral Density (PSD) analysis shows Sunda has dominant peak at 24h and Lombok at 12h. What tidal regimes does this correspond to?",
+    opts: [
+      "Sunda: semi-diurnal (M2 tide dominant), Lombok: diurnal (K1 tide dominant)",
+      "Sunda: diurnal (K1, O1 tide dominant), Lombok: mixed semi-diurnal (M2 dominant)",
+      "Both straits have the same tidal regime — the difference is due to wind patterns",
+      "Sunda: spring/neap cycle, Lombok: regular semi-diurnal"
+    ],
+    answer: 1,
+    explanation: "PSD analysis reveals the dominant tidal constituents in each area. Sunda Strait's dominant 24-hour peak indicates DIURNAL tides (K1 at 23.93h, O1 at 25.82h are the main diurnal constituents). Lombok Strait's dominant 12-hour peak indicates MIXED SEMI-DIURNAL tides (M2 at 12.42h is the main semi-diurnal constituent). This difference affects model design: Sunda's currents repeat roughly every 24h while Lombok's repeat every ~12h. The cutoff period chosen for tidal/non-tidal decomposition is 72h (3×24h) for both, to capture all tidal frequencies."
+  }
+];
+
+let userAnswers = Array(questions.length).fill(null);
+let answered = Array(questions.length).fill(false);
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  questions.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'card quiz-question';
+    div.id = `q-${qi}`;
+    div.innerHTML = `
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      ${q.opts.map((o,oi) => `
+        <button class="quiz-option" id="opt-${qi}-${oi}" onclick="selectOption(${qi},${oi})">${String.fromCharCode(65+oi)}. ${o}</button>
+      `).join('')}
+      <div style="margin-top:10px">
+        <button class="quiz-btn" onclick="checkAnswer(${qi})">Check Answer</button>
+        <span id="result-${qi}" style="margin-left:10px;font-weight:700"></span>
+      </div>
+      <div id="explain-${qi}" class="quiz-explain"></div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function selectOption(qi, oi) {
+  if (answered[qi]) return;
+  userAnswers[qi] = oi;
+  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(b => b.style.borderColor = '#d1e0f0');
+  document.getElementById(`opt-${qi}-${oi}`).style.borderColor = 'var(--primary)';
+  document.getElementById(`opt-${qi}-${oi}`).style.background = '#eaf4fb';
+}
+
+function checkAnswer(qi) {
+  if (answered[qi]) return;
+  const ua = userAnswers[qi];
+  if (ua === null) { alert('Please select an answer first!'); return; }
+  answered[qi] = true;
+  const q = questions[qi];
+  const correct = q.answer;
+  const explainEl = document.getElementById(`explain-${qi}`);
+  const resultEl = document.getElementById(`result-${qi}`);
+
+  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach((b, oi) => {
+    if (oi === correct) { b.className = 'quiz-option correct'; }
+    else if (oi === ua) { b.className = 'quiz-option wrong'; }
+    b.disabled = true;
+  });
+
+  if (ua === correct) {
+    resultEl.innerHTML = '✅ Correct!';
+    resultEl.style.color = 'var(--success)';
+    explainEl.className = 'quiz-explain';
+  } else {
+    resultEl.innerHTML = '❌ Incorrect';
+    resultEl.style.color = 'var(--danger)';
+    explainEl.className = 'quiz-explain wrong-explain';
+  }
+  explainEl.innerHTML = `<strong>📖 Explanation:</strong> ${q.explanation}`;
+  explainEl.style.display = 'block';
+}
+
+function showFinalScore() {
+  let score = 0;
+  answered.forEach((a, i) => { if (a && userAnswers[i] === questions[i].answer) score++; });
+  const total = questions.length;
+  const pct = Math.round(score/total*100);
+  let emoji = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
+  let msg = pct >= 80 ? 'Excellent! You\'re well prepared for the Toulouse training!' :
+            pct >= 60 ? 'Good progress! Review the topics you missed.' :
+            'Keep studying! Focus on the sections you found difficult.';
+  const scoreEl = document.getElementById('quiz-score');
+  scoreEl.innerHTML = `${emoji} Your Score: ${score}/${total} (${pct}%)<br><small>${msg}</small>`;
+  scoreEl.style.display = 'block';
+  scoreEl.scrollIntoView({behavior:'smooth'});
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

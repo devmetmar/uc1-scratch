@@ -1,6 +1,6 @@
 {
   "title": "UC1 Learning Platform",
-  "subtitle": "Kurikulum Fundamental Deep Learning + Proyek UC1 (HF Radar Currents) — MMS-2 P3 BMKG",
+  "subtitle": "Kurikulum Fundamental Deep Learning + Proyek UC1 (HF Radar Currents) — MMS-2 P3 BMKG · dilengkapi Study Guide Toulouse Sep 2026",
   "cutoff": "Draft Report Issue 3.0 (12/06/2026)",
   "modules": [
     {
@@ -15,7 +15,8 @@
             "Model fisik / NWP: persamaan dinamika dipecahkan di komputer (butuh kondisi awal, gaya, parameterisasi). Kuat di proses yang dipahami fisika, mahal secara komputasi, dan bisa meleset jika data/skala lokal kurang.",
             "Machine learning (ML): belajar pola dari contoh data historis (input → output). Tidak “mengerti” fisika secara eksplisit, tetapi bisa meniru hubungan yang berulang di observasi.",
             "Deep learning (DL) = ML dengan jaringan saraf berlapis-banyak, cocok untuk pola rumit di waktu dan ruang (seperti field arus HF Radar).",
-            "Analogi kasar: model fisik seperti mensimulasikan aturan main bola dari hukum gerak; ML seperti menonton ribuan pertandingan lalu menebak skor dari pola statistik — keduanya berguna, beda kekuatan."
+            "Analogi kasar: model fisik seperti mensimulasikan aturan main bola dari hukum gerak; ML seperti menonton ribuan pertandingan lalu menebak skor dari pola statistik — keduanya berguna, beda kekuatan.",
+            "Tradisional: data + aturan/kode → output. ML: data + jawaban contoh → aturan terpelajar. UC1 memberi ribuan contoh (histori arus+tide+angin → arus aktual)."
           ]
         },
         {
@@ -137,6 +138,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg03",
+          "q": "Kenapa Z-score lebih dipilih daripada Min–Max di preprocessing UC1?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Z-score selalu menghasilkan nilai 0–1"
+            },
+            {
+              "value": "b",
+              "label": "Lebih tahan outlier & cocok data mendekati normal"
+            },
+            {
+              "value": "c",
+              "label": "Min–Max butuh lebih banyak GPU"
+            },
+            {
+              "value": "d",
+              "label": "Z-score mempertahankan satuan fisik mentah"
+            }
+          ],
+          "correct": "b",
+          "explain": "Z-score memusatkan mean 0 dan variance 1; ekstrem tidak meremas seluruh skala seperti Min–Max. μ,σ hanya dari train."
         }
       ]
     },
@@ -222,7 +247,8 @@
           "heading": "Loss = ukuran kesalahan",
           "body": [
             "Loss function membandingkan prediksi ŷ dengan target y (contoh: MSE / RMSE untuk regresi arus).",
-            "Loss kecil → prediksi dekat target (pada data yang diukur). Loss besar → model masih jelek pada data itu."
+            "Loss kecil → prediksi dekat target (pada data yang diukur). Loss besar → model masih jelek pada data itu.",
+            "MSE = mean (prediksi − truth)² adalah loss regresi umum; RMSE adalah √MSE (satu satuan dengan arus)."
           ]
         },
         {
@@ -231,7 +257,8 @@
             "Backpropagation: menghitung seberapa “bersalah” tiap bobot terhadap loss (gradien).",
             "Gradient descent: geser bobot sedikit lawan arah gradien agar loss turun — diulang berkali-kali.",
             "Learning rate: seberapa besar langkah geser. Terlalu besar = goyang/tidak konvergen; terlalu kecil = belajar sangat lambat.",
-            "Anda tidak wajib menghitung turunan manual; framework (PyTorch) yang menghitungnya."
+            "Anda tidak wajib menghitung turunan manual; framework (PyTorch) yang menghitungnya.",
+            "Forward: ŷ = activation(W·x + b). Backward: hitung kontribusi tiap bobot ke error (chain rule). Update: W ← W − lr · ∇W. Ulangi banyak epoch."
           ]
         }
       ],
@@ -350,7 +377,8 @@
           "body": [
             "Training: untuk belajar bobot.",
             "Validation: untuk menyetel hyperparameter / early stopping (bukan untuk skor final).",
-            "Test: evaluasi jujur sekali di akhir — jangan dipakai bolak-balik untuk tuning."
+            "Test: evaluasi jujur sekali di akhir — jangan dipakai bolak-balik untuk tuning.",
+            "Training (~65%): update bobot. Validation (~15%): pantau generalisasi & hyperparameter — tidak update bobot. Test (~20%): evaluasi akhir sekali."
           ]
         },
         {
@@ -359,7 +387,8 @@
             "Data leakage: informasi dari masa depan atau dari test “bocor” ke training → skor palsu bagus.",
             "Random split: acak — berbahaya untuk data berurutan waktu (masa depan bisa bocor ke past).",
             "Temporal split: potong menurut waktu (latih masa lalu, uji masa depan) — yang dipakai UC1.",
-            "Spatial split: pisah wilayah — relevan jika generalisasi antar lokasi menjadi tujuan."
+            "Spatial split: pisah wilayah — relevan jika generalisasi antar lokasi menjadi tujuan.",
+            "JANGAN random split pada time series: masa depan bisa bocor ke train karena autokorelasi kuat (terutama tide). UC1 memakai chunk temporal antar musim."
           ]
         }
       ],
@@ -401,6 +430,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg06",
+          "q": "Kenapa random train/val/test berbahaya untuk time series arus?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Random split terlalu mahal komputasi"
+            },
+            {
+              "value": "b",
+              "label": "Observasi masa depan bisa bocor ke train → metrik semu bagus"
+            },
+            {
+              "value": "c",
+              "label": "Resolusi temporal ikut berubah"
+            },
+            {
+              "value": "d",
+              "label": "Butuh lebih banyak langkah preprocessing"
+            }
+          ],
+          "correct": "b",
+          "explain": "Autokorelasi kuat (terutama tide) membuat random split = leakage. UC1 memakai chunk temporal antar musim."
         }
       ]
     },
@@ -485,7 +538,9 @@
           "heading": "LSTM dalam bahasa sehari-hari",
           "body": [
             "Bayangkan catatan kecil yang di-update tiap jam: gate memutuskan apa yang dilupakan, apa yang ditulis, apa yang dibaca untuk prediksi.",
-            "UC1 memakai LSTM sebagai salah satu arsitektur — cocok saat input diperlakukan sebagai sequence, tetapi field spasial penuh lebih alami di ConvLSTM."
+            "UC1 memakai LSTM sebagai salah satu arsitektur — cocok saat input diperlakukan sebagai sequence, tetapi field spasial penuh lebih alami di ConvLSTM.",
+            "Tiga gerbang: Forget (apa dibuang dari memori), Input (info baru disimpan), Output (apa dikeluarkan sekarang) + Cell State (memori jangka panjang).",
+            "Shape input: (batch, lookback_time, features). Cocok untuk pola siklus 24 jam arus."
           ]
         }
       ],
@@ -527,6 +582,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg02",
+          "q": "Autokorelasi arus HF Radar menunjukkan siklus ~24 jam terutama karena…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Siklus radiasi matahari harian pada SST"
+            },
+            {
+              "value": "b",
+              "label": "Siklus tekanan atmosfer 24 jam saja"
+            },
+            {
+              "value": "c",
+              "label": "Forcing tidal (komponen diurnal / semi-diurnal)"
+            },
+            {
+              "value": "d",
+              "label": "Jadwal monitoring peralatan radar"
+            }
+          ],
+          "correct": "c",
+          "explain": "Sunda cenderung diurnal (~24 jam); Lombok mixed semi-diurnal (~12 jam). Tide adalah input kritis dan alasan lookback ~24 jam."
         }
       ]
     },
@@ -548,7 +627,9 @@
           "body": [
             "ConvLSTM: menggabungkan konvolusi (ruang) dengan memori LSTM (waktu) — arsitektur inti UC1 untuk field spatiotemporal.",
             "Temporal attention: setelah sequence diproses, model memberi bobot lebih besar ke timestep yang paling relevan sebelum membuat prediksi.",
-            "Anda belum perlu menghafal rumus; yang penting: ConvLSTM = ruang+waktu; attention = fokus selektif ke momen penting."
+            "Anda belum perlu menghafal rumus; yang penting: ConvLSTM = ruang+waktu; attention = fokus selektif ke momen penting.",
+            "LSTM flatten kehilangan tetangga spasial; ConvLSTM menjaga grid 2D di setiap gate.",
+            "Attention temporal: bobot ke semua keluaran waktu → fokus ke momen paling relevan (mis. fase tide serupa)."
           ]
         }
       ],
@@ -590,6 +671,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg04",
+          "q": "Perbedaan kunci LSTM vs ConvLSTM untuk prediksi arus adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "LSTM selalu lebih akurat daripada ConvLSTM"
+            },
+            {
+              "value": "b",
+              "label": "LSTM memakai gate; ConvLSTM hanya konvolusi tanpa memori"
+            },
+            {
+              "value": "c",
+              "label": "ConvLSTM mengganti matriks dense di gate dengan konvolusi sehingga struktur spasial terjaga"
+            },
+            {
+              "value": "d",
+              "label": "ConvLSTM hanya untuk time series 1D; LSTM untuk 2D"
+            }
+          ],
+          "correct": "c",
+          "explain": "Flatten di LSTM memutus hubungan tetangga. ConvLSTM menjaga dimensi H×W di hidden state — penting untuk field HF Radar."
         }
       ]
     },
@@ -621,7 +726,8 @@
           "body": [
             "PyTorch Lightning: merapikan loop training (LightningModule, Trainer, DataModule).",
             "Kedro: struktur pipeline proyek ML (nodes, pipelines, config) agar reproducible.",
-            "MLflow: mencatat eksperimen (parameter, metrik, artefak) — menjawab “run mana yang terbaik?”."
+            "MLflow: mencatat eksperimen (parameter, metrik, artefak) — menjawab “run mana yang terbaik?”.",
+            "Lightning mengurangi boilerplate training; MLflow menyimpan jejak eksperimen; Kedro merapikan pipeline data→model→eval; Docker untuk produksi multi-kontainer."
           ]
         }
       ],
@@ -707,6 +813,25 @@
             "Factory Training AI UCs September 2026 adalah rencana penguatan kapasitas (data → model/metrik → produksi), bukan bukti bahwa UC1 sudah selesai produksi.",
             "Sepanjang kurikulum, gunakan cut-off fakta 12 Juni 2026 kecuali Anda secara sadar membaca dokumen yang lebih baru."
           ]
+        },
+        {
+          "heading": "Glosarium cepat (Study Guide)",
+          "body": [
+            "Oseanografi: HFR (High-Frequency Radar), SSH (Sea Surface Height), SST, SSS, ITF (Indonesian Throughflow), CS/DS (Cross/Downstream).",
+            "ML: LSTM, ConvLSTM, Attention, RMSE/MAE/R², SHAP (penjelasan kontribusi fitur).",
+            "Tooling FT: PyTorch, Lightning, Kedro (pipeline), MLflow (tracking eksperimen), Milvus (vector DB untuk KNN), FES2022 (model tide)."
+          ]
+        },
+        {
+          "heading": "Jadwal Factory Training (Toulouse)",
+          "body": [
+            "Sen 21/9: DL Fundamentals & Training.",
+            "Sel 22/9: Improving Models & Experiment Tracking.",
+            "Rab 23/9: UC1 Data (extraction, analysis, preprocessing).",
+            "Kam 24/9: UC1 Models & Metrics.",
+            "Jum 25/9: Production & Discussions.",
+            "Study Guide interaktif (EN) juga tersedia di /study-guide.html pada situs ini."
+          ]
         }
       ],
       "quiz": [
@@ -781,7 +906,9 @@
             "Masalah UC1: bagaimana mengestimasi field arus HF Radar saat terjadi gap, dan meramal arus ke depan hingga sekitar 24 jam?",
             "Ini adalah tugas supervised learning spatiotemporal: dari sejarah observasi + variabel pendukung, prediksi U dan V di grid.",
             "Gap-filling dan forecast saling terkait: keduanya butuh representasi dinamika arus lokal yang konsisten di ruang dan waktu.",
-            "Tanpa solusi ini, layanan informasi arus di Sunda/Lombok mudah terputus meski infrastruktur radar sudah ada."
+            "Tanpa solusi ini, layanan informasi arus di Sunda/Lombok mudah terputus meski infrastruktur radar sudah ada.",
+            "UC1: mengisi gap temporal HF Radar (void filling) dan forecast arus permukaan hingga ~24 jam dengan metodologi ML/DL yang sama, di Selat Sunda (Bada) dan Lombok (Sega).",
+            "Alur konsep: HF Radar (10 menit, ~1 km) + tide/SSH/angin/batimetri → model DL (LSTM/ConvLSTM ± attention) → U,V terisi + forecast."
           ]
         },
         {
@@ -869,6 +996,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg01",
+          "q": "Tujuan utama UC1 di MMS2 adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Forecast curah hujan dari satelit"
+            },
+            {
+              "value": "b",
+              "label": "Mengisi gap temporal HF Radar + forecast arus hingga ~24 jam"
+            },
+            {
+              "value": "c",
+              "label": "Monitor banjir pesisir dari muka laut"
+            },
+            {
+              "value": "d",
+              "label": "Klasifikasi massa air dari profil suhu"
+            }
+          ],
+          "correct": "b",
+          "explain": "UC1 fokus void-filling arus permukaan HF Radar dan forecast hingga ~24 jam di Sunda & Lombok dengan metodologi ML yang sama."
         }
       ]
     },
@@ -884,7 +1035,10 @@
             "Selat Sunda dan Lombok menghubungkan Laut Jawa dengan Samudra Hindia; Lombok khususnya merupakan jalur penting Indonesian Throughflow (ITF).",
             "Arus di sini bukan “acak”: ada sinyal skala besar (ITF/monsun) yang berinteraksi dengan geometri selat dan pasang surut lokal.",
             "Oleh karena itu model AI perlu fitur yang menangkap gaya besar (misalnya gradien SSH utara–selatan) sekaligus dinamika lokal (tide, past currents).",
-            "Memahami domain membantu Anda menilai apakah prediksi model masuk akal secara fisik, bukan hanya menurunkan loss."
+            "Memahami domain membantu Anda menilai apakah prediksi model masuk akal secara fisik, bukan hanya menurunkan loss.",
+            "Sunda (Bada): sekitar 105.8–106.0°E, 6.0–5.8°S — antara Jawa & Sumatra; aliran relatif stream-like (SW/NE); tide dominan diurnal (~24 jam); batimetri relatif homogen.",
+            "Lombok (Sega): sekitar 115.5–115.8°E, 8.75–8.47°S — antara Bali & Lombok; lebih kompleks karena bifurkasi Nusa Penida; tide mixed semi-diurnal (~12 jam); jalur utama ITF Pasifik→Hindia.",
+            "ITF mengangkut air hangat salinitas rendah dari Pasifik ke Hindia; memengaruhi iklim regional, monsun, dan transport panas. Komponen musiman (low-frequency) arus banyak terkait ITF."
           ]
         },
         {
@@ -893,7 +1047,11 @@
             "Analisis Issue 3.0 membagi musim menurut pola angin: monsun Australia (Des–Feb), transisi (Mar–Mei), monsun Asia (Jun–Agu), dan transisi (Sep–Nov).",
             "Dari rose plot, aliran paling sering Maret–November cenderung dari Laut Jawa ke Samudra Hindia (arah barat daya).",
             "Pada monsun Australia terjadi pembalikan pola dominan ke arah timur laut di kedua selat.",
-            "Sunda cenderung lebih “stream-like” (arah lebih koheren); Lombok lebih kompleks karena morfologi (termasuk pengaruh Nusa Penida yang membagi cabang aliran)."
+            "Sunda cenderung lebih “stream-like” (arah lebih koheren); Lombok lebih kompleks karena morfologi (termasuk pengaruh Nusa Penida yang membagi cabang aliran).",
+            "Monsun Australia (Des–Feb): angin NW→SE → arus cenderung NE.",
+            "Transisi Aus→Asia (Mar–Mei) & Asia→Aus (Sep–Nov): campuran, SW sering dominan.",
+            "Monsun Asia (Jun–Agu): angin SE→NW → arus cenderung SW.",
+            "Untuk model, musim diencode dengan cos/sin day-of-year agar sifat siklik tidak “putus” di pergantian tahun."
           ]
         },
         {
@@ -902,7 +1060,9 @@
             "Komponen tidal: osilasi periodik terkait pasang surut; sering mendominasi variabilitas jangka pendek di banyak selat.",
             "Komponen non-tidal: sisa setelah sinyal tide disaring — terkait angin, gradien tekanan/SSH, dan proses yang lebih lambat.",
             "Di UC1, dekomposisi memakai filter berdasarkan analisis Power Spectral Density (PSD) agar cutoff selaras frekuensi dominan.",
-            "Memisahkan tidal/non-tidal membantu menguji korelasi fisik yang “tertutup” oleh sinyal tide yang kuat."
+            "Memisahkan tidal/non-tidal membantu menguji korelasi fisik yang “tertutup” oleh sinyal tide yang kuat.",
+            "High-pass (periode < ~72 jam) → sinyal tidal (12h/24h). Low-pass (> ~72 jam) → non-tidal (musiman/ITF).",
+            "Temuan analisis: setelah tide dihilangkan, korelasi gradien SSH dengan arus DS non-tidal naik tajam (contoh Issue 3.0: dari ~0.53 ke ~0.80) — driver berbeda untuk skala waktu berbeda."
           ]
         },
         {
@@ -911,7 +1071,9 @@
             "U/V adalah basis geografis. CS/DS memutar basis mengikuti sumbu aliran utama selat.",
             "DS = komponen sepanjang aliran utama; CS = komponen tegak lurus (menyebar/berputar ke samping).",
             "Issue 3.0 memilih sudut rotasi dari median orientasi arus radar (bukan hanya tebak dari batimetri), karena lebih relevan ilmiah dan distribusi DS lebih lebar.",
-            "Representasi CS/DS dipakai lanjut di analisis distribusi, korelasi, dan interpretasi fitur."
+            "Representasi CS/DS dipakai lanjut di analisis distribusi, korelasi, dan interpretasi fitur.",
+            "Sudut rotasi (Issue 3.0, dari median orientasi radar): Sunda ≈ 45.21° clockwise dari Utara; Lombok ≈ 53.06° clockwise dari Utara.",
+            "CS/DS lebih bermakna fisik untuk dinamika selat daripada U/V murni geografis."
           ]
         },
         {
@@ -921,6 +1083,15 @@
             "Berikutnya: arah dan variabilitas waktu — apakah pola berubah masuk akal sepanjang hari/musim.",
             "Struktur eddy relatif kurang diprioritaskan dalam keputusan evaluasi operasional yang disampaikan ke tim.",
             "Prioritas ini memandu pilihan metrik (misalnya RMSE norm, akurasi berbasis ambang) dan cara membaca hasil eksperimen nanti."
+          ]
+        },
+        {
+          "heading": "HF Radar — cara kerja & spek UC1",
+          "body": [
+            "HFR memancarkan radio 3–30 MHz ke permukaan laut; Doppler gelombang pantulan → kecepatan arus permukaan; output field 2D U & V.",
+            "Spek UC1: resolusi spasial ~1 km (0.009°); temporal 10 menit; periode studi sekitar Apr 2023 – Des 2025; situs Bada & Sega.",
+            "Masalah tipikal: gap temporal (hardware/maintenance), gap spasial (daratan/cakupan), perubahan resolusi (1 jam → 10 menit Mei 2023), gap ~3 bulan sekitar Des 2023 di kedua situs.",
+            "Gap multi-hari inilah alasan utama butuh ML untuk mengisi void — interpolasi sederhana tidak cukup."
           ]
         }
       ],
@@ -981,6 +1152,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg12",
+          "q": "PSD Sunda puncak 24 jam & Lombok 12 jam sesuai rezim…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Sunda semi-diurnal; Lombok diurnal"
+            },
+            {
+              "value": "b",
+              "label": "Sunda diurnal (K1/O1); Lombok mixed semi-diurnal (M2)"
+            },
+            {
+              "value": "c",
+              "label": "Keduanya sama; beda hanya karena angin"
+            },
+            {
+              "value": "d",
+              "label": "Sunda spring–neap; Lombok semi-diurnal biasa"
+            }
+          ],
+          "correct": "b",
+          "explain": "Cutoff dekomposisi ~72 jam menangkap pita tidal penuh di kedua situs meski frekuensi dominan berbeda."
         }
       ]
     },
@@ -997,7 +1192,15 @@
             "Tide: model FES2022 (dan perbandingan dengan harmonik stasiun AWS).",
             "Angin: komponen dari ERA5 reanalysis.",
             "Oceanografi: SST, SSH, SSS dari model global (CMEMS/Mercator); SST tambahan dari Ostia; plus batimetri lokal (BATNAS).",
-            "Gradien SSH utara–selatan (Laut Jawa → Samudra Hindia) diusulkan/diperkuat sebagai fitur dinamis lintas selat."
+            "Gradien SSH utara–selatan (Laut Jawa → Samudra Hindia) diusulkan/diperkuat sebagai fitur dinamis lintas selat.",
+            "Current U,V (HF Radar MMS): ~1 km / 10 menit — target utama + histori sebagai input.",
+            "Tide (FES2022): ~1 km / 10 menit — driver periodik 12/24 jam.",
+            "Gradien SSH (CMEMS Mercator): ~9 km, 1 titik efektif / 1 jam — korelasi tinggi dengan DS non-tidal (R≈0.80).",
+            "Angin CS/DS (ERA5): ~28 km, 1 titik / 1 jam — pola diurnal CS (R~0.46).",
+            "Batimetri (BATNAS): ~200 m, statis — penting terutama Lombok.",
+            "SST Ostia: ~0.5 km, 1 titik / harian — relevan non-tidal CS di Sunda (R≈0.35).",
+            "Lat/Lon + waktu cos/sin — konteks spasial & siklus diurnal/musiman.",
+            "TIDAK dipakai: SSS (korelasi rendah), time-of-day mentah tanpa encoding (tidak menonjol), grid SSH/SST penuh bila single-point sudah memadai."
           ]
         },
         {
@@ -1085,6 +1288,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg05",
+          "q": "Variabel dengan korelasi tertinggi terhadap DS non-tidal di Lombok (analisis UC1) adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "SST"
+            },
+            {
+              "value": "b",
+              "label": "Kecepatan & arah angin"
+            },
+            {
+              "value": "c",
+              "label": "Gradien SSH Laut Jawa vs Samudra Hindia"
+            },
+            {
+              "value": "d",
+              "label": "SSS"
+            }
+          ],
+          "correct": "c",
+          "explain": "R≈0.80 setelah komponen tidal dihilangkan — selaras fisika ITF: gradien tekanan/SSH mendorong aliran melalui Lombok."
         }
       ]
     },
@@ -1212,7 +1439,11 @@
             "Melihat histogram/distribusi mendeteksi outlier, skala berbeda, dan kebutuhan normalisasi.",
             "Matriks korelasi: variabel paling terkait arus meliputi SSH (terutama gradient), angin, tide (lebih jelas di Sunda), day-of-year, dan posisi (lon/lat).",
             "Batimetri kurang berkorelasi di Sunda (relatif homogen) tetapi penting di Lombok menurut analisis lanjutan.",
-            "SSS dan sebagian SST menunjukkan hubungan lemah/redundan dengan angin atau SSH — kandidat untuk diuji lalu mungkin dibuang."
+            "SSS dan sebagian SST menunjukkan hubungan lemah/redundan dengan angin atau SSH — kandidat untuk diuji lalu mungkin dibuang.",
+            "Gradien SSH: korelasi tertinggi dengan komponen DS (non-tidal).",
+            "Tide: menggerakkan osilasi seasonal/diurnal 24 jam.",
+            "Angin: menjelaskan pola 24 jam komponen CS.",
+            "Batimetri berkorelasi dengan longitude → pengaruh kuat di Lombok (geometri kompleks)."
           ]
         },
         {
@@ -1221,7 +1452,9 @@
             "Korelasi linear tidak cukup; SHAP memakai model surrogat (XGBoost) untuk mengukur kontribusi fitur ke prediksi.",
             "Beeswarm SHAP mengonfirmasi pentingnya SSH gradient dan SST Ostia dibanding SSH/SST titik CMEMS semata.",
             "Di Lombok, batimetri serta lat/lon sangat berpengaruh — masuk akal karena morfologi lebih kompleks.",
-            "Untuk angin, analisis mendorong komponen CS/DS di titik terpilih (bukan wajib menyertakan arah/norm mentah)."
+            "Untuk angin, analisis mendorong komponen CS/DS di titik terpilih (bukan wajib menyertakan arah/norm mentah).",
+            "SHAP (SHapley Additive exPlanations): kontribusi fitur per prediksi (teori permainan). Nilai +0.5 berarti fitur itu mendorong prediksi +0.5 unit relatif baseline.",
+            "Temuan ringkas: Sunda DS — SSH gradient > tide > hour > day of year; Sunda CS — longitude > day_of_year_cos > latitude; Lombok — batimetri sangat berpengaruh (beda dari Sunda)."
           ]
         },
         {
@@ -1230,7 +1463,11 @@
             "PSD mengidentifikasi frekuensi dominan untuk cutoff filter tidal (high-pass) vs non-tidal (low-pass).",
             "Setelah non-tidal diisolasi, scatter terhadap SSH gradient, angin, dan SST membantu melihat hubungan yang tertutup tide.",
             "Auto-correlation arus memberi petunjuk lookback bermakna (hingga ~24 jam diuji); cross-correlation dengan tide kuat pada resolusi 10 menit.",
-            "Cross-correlation SSH gradient/angin/SST cenderung kurang bergantung lag; tetap ada catatan untuk uji gradient temporal SST dan histori angin bersama pakar."
+            "Cross-correlation SSH gradient/angin/SST cenderung kurang bergantung lag; tetap ada catatan untuk uji gradient temporal SST dan histori angin bersama pakar.",
+            "Autokorelasi arus menunjukkan siklus ~24 jam (dan kelipatan) karena tide — alasan lookback ~24 jam.",
+            "Autokorelasi signifikan bisa sampai ~14 hari, tetapi lookback lebih panjang = lebih sedikit sampel training.",
+            "PSD: Sunda puncak dominan ~24 jam (diurnal K1/O1); Lombok ~12 jam (mixed semi-diurnal, M2). Cutoff dekomposisi ~72 jam (3×24 jam) menangkap seluruh pita tidal.",
+            "Input tide praktis: t…t−24h resolusi 10 menit; t−24h…t−48h bisa di-downsample per jam."
           ]
         },
         {
@@ -1300,6 +1537,102 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg02",
+          "q": "Autokorelasi arus HF Radar menunjukkan siklus ~24 jam terutama karena…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Siklus radiasi matahari harian pada SST"
+            },
+            {
+              "value": "b",
+              "label": "Siklus tekanan atmosfer 24 jam saja"
+            },
+            {
+              "value": "c",
+              "label": "Forcing tidal (komponen diurnal / semi-diurnal)"
+            },
+            {
+              "value": "d",
+              "label": "Jadwal monitoring peralatan radar"
+            }
+          ],
+          "correct": "c",
+          "explain": "Sunda cenderung diurnal (~24 jam); Lombok mixed semi-diurnal (~12 jam). Tide adalah input kritis dan alasan lookback ~24 jam."
+        },
+        {
+          "id": "sg05",
+          "q": "Variabel dengan korelasi tertinggi terhadap DS non-tidal di Lombok (analisis UC1) adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "SST"
+            },
+            {
+              "value": "b",
+              "label": "Kecepatan & arah angin"
+            },
+            {
+              "value": "c",
+              "label": "Gradien SSH Laut Jawa vs Samudra Hindia"
+            },
+            {
+              "value": "d",
+              "label": "SSS"
+            }
+          ],
+          "correct": "c",
+          "explain": "R≈0.80 setelah komponen tidal dihilangkan — selaras fisika ITF: gradien tekanan/SSH mendorong aliran melalui Lombok."
+        },
+        {
+          "id": "sg07",
+          "q": "SHAP +0.5 untuk SSH_gradient pada prediksi DS berarti…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Korelasi SSH–DS = 0.5"
+            },
+            {
+              "value": "b",
+              "label": "Fitur itu mendorong prediksi DS naik ~0.5 unit relatif baseline untuk sampel tersebut"
+            },
+            {
+              "value": "c",
+              "label": "Feature importance global = 50%"
+            },
+            {
+              "value": "d",
+              "label": "Model selalu prediksi 0.5 m/s bila SSH ada"
+            }
+          ],
+          "correct": "b",
+          "explain": "SHAP adalah kontribusi lokal per sampel terhadap prediksi (additive), bukan korelasi global."
+        },
+        {
+          "id": "sg12",
+          "q": "PSD Sunda puncak 24 jam & Lombok 12 jam sesuai rezim…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Sunda semi-diurnal; Lombok diurnal"
+            },
+            {
+              "value": "b",
+              "label": "Sunda diurnal (K1/O1); Lombok mixed semi-diurnal (M2)"
+            },
+            {
+              "value": "c",
+              "label": "Keduanya sama; beda hanya karena angin"
+            },
+            {
+              "value": "d",
+              "label": "Sunda spring–neap; Lombok semi-diurnal biasa"
+            }
+          ],
+          "correct": "b",
+          "explain": "Cutoff dekomposisi ~72 jam menangkap pita tidal penuh di kedua situs meski frekuensi dominan berbeda."
         }
       ]
     },
@@ -1324,7 +1657,10 @@
             "Dua alat utama: interpolasi linear sepanjang waktu (scipy) dan ekstrapolasi spasial Gauss–Seidel (pyinterp) yang menyebarkan nilai dari tetangga.",
             "Alur gabungan: coba isi menurut ambang waktu; sisanya yang masih bolong diisi spasial jika proporsi data valid mencukupi.",
             "Ambang durasi yang dipilih: hingga ~80 menit (Sunda) dan ~50 menit (Lombok) untuk mengutamakan interpolasi waktu dengan RMSE terkendali.",
-            "Ambang proporsi valid: Sunda ~0.9 (NaN max ~0.1); Lombok ~0.85 (NaN max ~0.15) untuk full mask dan border. Jika melebihi ambang, timestamp tidak dipakai training."
+            "Ambang proporsi valid: Sunda ~0.9 (NaN max ~0.1); Lombok ~0.85 (NaN max ~0.15) untuk full mask dan border. Jika melebihi ambang, timestamp tidak dipakai training.",
+            "Gap spatio-temporal (pixel hilang): interpolasi temporal jika gap ≤ 80 menit (Sunda) / ≤ 50 menit (Lombok); lalu ekstrapolasi spasial (Gauss–Seidel) bila tetangga valid; buang timestamp jika terlalu besar.",
+            "Gap temporal (seluruh peta hilang): interpolasi temporal dengan ambang yang sama; di atas ambang biarkan kosong — itu tugas model ML.",
+            "Ambang dipilih agar RMSE interpolasi tetap < ~10 cm/s. Lombok lebih ketat karena tide 12 jam + geometri Y (arus berubah lebih cepat)."
           ]
         },
         {
@@ -1342,7 +1678,11 @@
             "Kebanyakan variabel numerik mendekati Gaussian atau beda skala → dipilih standardisasi Z-score (bukan Min-Max) agar lebih tahan outlier.",
             "Mean dan standar deviasi dihitung HANYA dari training set, lalu diterapkan ke val/test — mencegah data leakage.",
             "Statistik disimpan untuk inverse-transform saat post-processing output model.",
-            "Split temporal memakai potongan waktu tersebar antar musim/tahun; 48 jam pertama tiap potongan dibuang agar event oseanografi tidak bocor antar subset."
+            "Split temporal memakai potongan waktu tersebar antar musim/tahun; 48 jam pertama tiap potongan dibuang agar event oseanografi tidak bocor antar subset.",
+            "Z-score: y' = (y − μ) / σ. Lebih tahan outlier daripada Min–Max; cocok data mendekati normal dan optimasi berbasis gradien.",
+            "HITUNG μ,σ HANYA dari training, lalu terapkan ke val/test — kalau tidak, terjadi leakage.",
+            "Split: chunk temporal tersebar antar musim (train/val/test masing-masing melihat kondisi Australian / Asian / transisi) agar model terpapar semua rezim tanpa random shuffle.",
+            "Buang ~48 jam pertama tiap chunk agar tidak ada kebocoran antar potongan bersebelahan."
           ]
         }
       ],
@@ -1403,6 +1743,78 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg03",
+          "q": "Kenapa Z-score lebih dipilih daripada Min–Max di preprocessing UC1?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Z-score selalu menghasilkan nilai 0–1"
+            },
+            {
+              "value": "b",
+              "label": "Lebih tahan outlier & cocok data mendekati normal"
+            },
+            {
+              "value": "c",
+              "label": "Min–Max butuh lebih banyak GPU"
+            },
+            {
+              "value": "d",
+              "label": "Z-score mempertahankan satuan fisik mentah"
+            }
+          ],
+          "correct": "b",
+          "explain": "Z-score memusatkan mean 0 dan variance 1; ekstrem tidak meremas seluruh skala seperti Min–Max. μ,σ hanya dari train."
+        },
+        {
+          "id": "sg06",
+          "q": "Kenapa random train/val/test berbahaya untuk time series arus?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Random split terlalu mahal komputasi"
+            },
+            {
+              "value": "b",
+              "label": "Observasi masa depan bisa bocor ke train → metrik semu bagus"
+            },
+            {
+              "value": "c",
+              "label": "Resolusi temporal ikut berubah"
+            },
+            {
+              "value": "d",
+              "label": "Butuh lebih banyak langkah preprocessing"
+            }
+          ],
+          "correct": "b",
+          "explain": "Autokorelasi kuat (terutama tide) membuat random split = leakage. UC1 memakai chunk temporal antar musim."
+        },
+        {
+          "id": "sg09",
+          "q": "Kenapa ambang interpolasi Lombok (50 menit) lebih ketat dari Sunda (80 menit)?",
+          "options": [
+            {
+              "value": "a",
+              "label": "Komputer Lombok lebih cepat"
+            },
+            {
+              "value": "b",
+              "label": "Lebih banyak stasiun radar"
+            },
+            {
+              "value": "c",
+              "label": "Arus Lombok berubah lebih cepat (tide 12 jam + geometri kompleks)"
+            },
+            {
+              "value": "d",
+              "label": "Resolusi spasial Lombok lebih tinggi"
+            }
+          ],
+          "correct": "c",
+          "explain": "Analisis RMSE interpolasi: error Lombok naik tajam setelah ~50 menit karena dinamika lebih cepat/kompleks."
         }
       ]
     },
@@ -1418,7 +1830,9 @@
             "Sebelum DL kompleks, UC1 membangun baseline KNN regression: cari situasi historis mirip, lalu regress state arus.",
             "Pendekatan diadaptasi dari metode analogue BMKG di Selat Bali (tetangga berbasis kondisi fisik, terutama tide).",
             "Fitur pencarian: tide, past currents, gradien SSH, dan angin; output regresi = field arus pada timestamp target.",
-            "Data yang masuk sudah dinormalisasi dari tahap preprocessing agar skala fitur sebanding."
+            "Data yang masuk sudah dinormalisasi dari tahap preprocessing agar skala fitur sebanding.",
+            "Cari K situasi historis mirip (tide, angin, SSH, arus masa lalu) di Milvus → rata-rata berbobot arus saat itu = prediksi.",
+            "Hybrid Search multi-variabel + WeightedRanker; hanya data ≥24 jam ke belakang; tetangga harus berjarak >1 jam (diversitas)."
           ]
         },
         {
@@ -1445,7 +1859,9 @@
             "Issue 3.0 menyatakan hasil analogue “mitigated”: error lebih terkendali di Sunda, lebih kritis di Lombok terutama border dan komponen tertentu.",
             "Limitasi KNN: jika semua tetangga kehilangan wilayah yang sama, prediksi juga bolong di wilayah itu.",
             "Efek smoothing: rata-rata tetangga meredam ekstrem (nilai tinggi/rendah menjadi lebih datar).",
-            "Metrik kemiripan Milvus terbatas (L2/IP/cosine); DTW untuk deret waktu bisa menarik tetapi tidak tersedia di tool search yang dipakai."
+            "Metrik kemiripan Milvus terbatas (L2/IP/cosine); DTW untuk deret waktu bisa menarik tetapi tidak tersedia di tool search yang dipakai.",
+            "Limitasi utama KNN: smoothing — ekstrem (arus sangat kuat/lemah) tergerus rata-rata tetangga. Jika semua tetangga kosong di wilayah spasial tertentu, output ikut kosong.",
+            "Order-of-magnitude baseline Issue 3.0: Sunda RMSE ~30 cm/s; Lombok bisa lebih tinggi (hingga ~70 cm/s pada komponen V). DL harus mengalahkan baseline ini — angka final DL belum diklaim jika belum di Issue 3.0."
           ]
         }
       ],
@@ -1506,6 +1922,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg08",
+          "q": "Limitasi utama baseline Analogue/KNN dibanding DL adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Milvus tidak bisa multi-variabel"
+            },
+            {
+              "value": "b",
+              "label": "Rata-rata tetangga menyamarkan ekstrem (smoothing arus kuat/lemah)"
+            },
+            {
+              "value": "c",
+              "label": "KNN wajib retrain tiap data baru"
+            },
+            {
+              "value": "d",
+              "label": "KNN tidak bisa pakai tide"
+            }
+          ],
+          "correct": "b",
+          "explain": "Prediksi = rata-rata berbobot → ekstrem tergerus; region yang kosong di semua tetangga ikut kosong di output."
         }
       ]
     },
@@ -1521,7 +1961,9 @@
             "Literature review Issue 3.0 meninjau FCNN/RF/FFNN/LSTM untuk aspek temporal, serta CNN-GRU dan ConvLSTM untuk spatiotemporal.",
             "Studi terkait menunjukkan perhatian (attention) sering memperbaiki prediksi arus dengan menimbang timestep informatif.",
             "UC1 mendokumentasikan tiga arsitektur implementasi: LSTM, ConvLSTM, dan ConvLSTM dengan temporal attention.",
-            "Ini penerapan langsung F8–F9: memori waktu + (opsional) struktur spasial grid."
+            "Ini penerapan langsung F8–F9: memori waktu + (opsional) struktur spasial grid.",
+            "Perjalanan: Analogue (KNN) → LSTM (temporal) → ConvLSTM (spatio-temporal) → ConvLSTM + Attention (fokus timestep relevan).",
+            "Literatur: ConvLSTM sering unggul vs CNN-GRU/LSTM untuk prediksi arus spatio-temporal; attention temporal dapat menurunkan MAE secara signifikan di studi referensi."
           ]
         },
         {
@@ -1530,7 +1972,10 @@
             "LSTM menangani dependensi temporal panjang lewat gerbang input/forget/output.",
             "Tensor mentah: (batch, lookback, channel, lat, lon). LSTM butuh (batch, sequence, features).",
             "Solusi: flatten channel×lat×lon menjadi vektor fitur per timestep — temporal terjaga, tetapi kedekatan spasial geografis hilang.",
-            "State terakhir diproyeksikan (via konvolusi) ke lead time untuk kedua komponen arus. Cocok sebagai baseline DL temporal, kurang ideal bila pola spasial lokal penting."
+            "State terakhir diproyeksikan (via konvolusi) ke lead time untuk kedua komponen arus. Cocok sebagai baseline DL temporal, kurang ideal bila pola spasial lokal penting.",
+            "Input LSTM tipikal: (batch, lookback, channels×H×W) setelah flatten spasial — hubungan tetangga hilang.",
+            "Pipeline: flatten → LSTM → last hidden → Conv2D 1×1 decoder → (batch, lead_time, 2, H, W) untuk U & V.",
+            "Cell state seperti “conveyor belt” memori jangka panjang (pola musiman); gate menangani update jangka pendek (siklus tide)."
           ]
         },
         {
@@ -1539,7 +1984,9 @@
             "ConvLSTM mengganti operasi dense di gerbang LSTM dengan konvolusi, sehingga hidden/cell state tetap berbentuk peta.",
             "Model menjaga tetangga spasial, koherensi lokal, dan evolusi waktu sekaligus — cocok untuk field radar.",
             "Setelah memproses lookback, representasi spatiotemporal terakhir di-decode dengan konvolusi 2D menjadi 2×lead_time channel (U dan V sepanjang horizon).",
-            "Bagi pemula: bayangkan LSTM yang “berpikir dalam bentuk gambar berurutan”, bukan daftar angka datar."
+            "Bagi pemula: bayangkan LSTM yang “berpikir dalam bentuk gambar berurutan”, bukan daftar angka datar.",
+            "Gate LSTM diganti operasi konvolusi: f = σ(W_f ⊛ [h,x] + b) sehingga hidden tetap (batch, H, W, hidden).",
+            "Pipeline: Input (B,T,C,H,W) → ConvLSTM → [opsional attention atas semua T] → Conv2D decoder → arus."
           ]
         },
         {
@@ -1548,7 +1995,9 @@
             "Modul attention menerima seluruh urutan output ConvLSTM dan belajar bobot per timestep.",
             "Setelah flatten spasial-fitur, softmax antar waktu menghasilkan bobot; timestep penting mendapat tekanan lebih besar.",
             "Urutan tertimbang dijumlah jadi konteks tunggal, lalu di-reshape kembali ke bentuk spasial dan diproyeksikan seperti ConvLSTM biasa.",
-            "Penting: arsitektur terdokumentasi di Issue 3.0, tetapi Results analysis kuantitatif masih kosong — jangan mengisi angka performa dari imajinasi."
+            "Penting: arsitektur terdokumentasi di Issue 3.0, tetapi Results analysis kuantitatif masih kosong — jangan mengisi angka performa dari imajinasi.",
+            "Tidak semua timestep masa lalu sama pentingnya. Attention menghitung bobot softmax atas keluaran ConvLSTM lalu weighted sum → context vector → prediksi.",
+            "Intuisi UC1: saat prediksi t, keadaan ~12 jam lalu bisa lebih relevan daripada 5 menit lalu karena periodisitas tide."
           ]
         }
       ],
@@ -1609,6 +2058,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg04",
+          "q": "Perbedaan kunci LSTM vs ConvLSTM untuk prediksi arus adalah…",
+          "options": [
+            {
+              "value": "a",
+              "label": "LSTM selalu lebih akurat daripada ConvLSTM"
+            },
+            {
+              "value": "b",
+              "label": "LSTM memakai gate; ConvLSTM hanya konvolusi tanpa memori"
+            },
+            {
+              "value": "c",
+              "label": "ConvLSTM mengganti matriks dense di gate dengan konvolusi sehingga struktur spasial terjaga"
+            },
+            {
+              "value": "d",
+              "label": "ConvLSTM hanya untuk time series 1D; LSTM untuk 2D"
+            }
+          ],
+          "correct": "c",
+          "explain": "Flatten di LSTM memutus hubungan tetangga. ConvLSTM menjaga dimensi H×W di hidden state — penting untuk field HF Radar."
         }
       ]
     },
@@ -1624,7 +2097,8 @@
             "Model belajar memetakan jendela lookback → state pada lead time (LT) tetap dalam satu forward pass.",
             "Training relatif sederhana karena target selalu observasi asli, tanpa umpan balik prediksi.",
             "Kelemahan: untuk LT panjang, model harus “melompat” banyak proses dinamis sekaligus — sering lebih sulit untuk horizon ~24 jam.",
-            "Cocok sebagai eksperimen awal yang bersih untuk membandingkan arsitektur pada LT spesifik."
+            "Cocok sebagai eksperimen awal yang bersih untuk membandingkan arsitektur pada LT spesifik.",
+            "Input (t₀…t) → model → output t+LT. Sederhana, tapi sering butuh model terpisah per lead time; lemah di horizon panjang."
           ]
         },
         {
@@ -1633,7 +2107,8 @@
             "Saat training, model dioptimasi untuk langkah pendek (misalnya beberapa jam).",
             "Saat inferensi, prediksi dimasukkan lagi sebagai input untuk mencapai horizon lebih panjang (hingga 24 jam).",
             "Fleksibel: horizon bisa diatur lewat jumlah iterasi.",
-            "Risiko klasik: akumulasi error — model dilatih hanya pada input ground truth, belum terbiasa pada prediksinya sendiri, sehingga drift bisa membesar."
+            "Risiko klasik: akumulasi error — model dilatih hanya pada input ground truth, belum terbiasa pada prediksinya sendiri, sehingga drift bisa membesar.",
+            "Latih prediksi 1 langkah dengan ground truth; saat inferensi umpan prediksi kembali (roll sampai 24 jam). Fleksibel, tapi akumulasi error + mismatch train/infer."
           ]
         },
         {
@@ -1642,7 +2117,8 @@
             "Mirip iterative, tetapi training juga memasukkan (penuh/sebagian) output model sebagai input langkah berikutnya.",
             "Tujuan: mengurangi gap distribusi antara training dan inferensi (exposure ke error sendiri).",
             "Potensi lebih baik untuk horizon panjang dan lead time fleksibel.",
-            "Biaya: training lebih rumit, dependensi temporal efektif lebih panjang, dan optimasi bisa kurang stabil — butuh strategi hati-hati (terkait F7/F10)."
+            "Biaya: training lebih rumit, dependensi temporal efektif lebih panjang, dan optimasi bisa kurang stabil — butuh strategi hati-hati (terkait F7/F10).",
+            "Saat training, model sengaja melihat prediksinya sendiri (scheduled sampling) agar robust terhadap input tidak sempurna. Lebih sulit dilatih, lebih baik untuk horizon panjang."
           ]
         },
         {
@@ -1651,7 +2127,8 @@
             "Alih-alih memprediksi field arus absolut, model memprediksi residual/increment terhadap state arus terakhir di lookback.",
             "Prediksi final = state terakhir + residual.",
             "Intuisi: sering lebih mudah belajar “perubahan kecil” daripada membangun ulang seluruh field dari nol, terutama jika persistensi arus tinggi.",
-            "Residual learning dapat digabung dengan kerangka one-pass/iterative/auto-regressive sebagai perbaikan tambahan yang didokumentasikan di Issue 3.0."
+            "Residual learning dapat digabung dengan kerangka one-pass/iterative/auto-regressive sebagai perbaikan tambahan yang didokumentasikan di Issue 3.0.",
+            "Klasik: prediksi nilai arus absolut. Residual: prediksi Δ lalu tambahkan ke arus terakhir yang diketahui — error sering lebih kecil, sangat berguna di iterative/auto-regressive."
           ]
         }
       ],
@@ -1712,6 +2189,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg10",
+          "q": "Beda Iterative vs Auto-regressive untuk forecast panjang…",
+          "options": [
+            {
+              "value": "a",
+              "label": "Iterative = banyak model; AR = satu model"
+            },
+            {
+              "value": "b",
+              "label": "Iterative latih hanya dengan ground truth; AR melatih model menerima prediksinya sendiri"
+            },
+            {
+              "value": "c",
+              "label": "AR selalu lebih cepat dilatih"
+            },
+            {
+              "value": "d",
+              "label": "Iterative butuh lebih banyak VRAM"
+            }
+          ],
+          "correct": "b",
+          "explain": "Iterative: mismatch train/infer. Auto-regressive (+ residual) lebih robust ke akumulasi error di horizon panjang."
         }
       ]
     },
@@ -1727,7 +2228,9 @@
             "Kerangka Eulerian membandingkan prediksi vs observasi pada lokasi dan waktu yang bersesuaian di grid.",
             "Metrik per komponen (U/V atau DS/CS): RMSE/MSE, MAE, bias, R²/RSE — masing-masing punya interpretasi berbeda (penalti error besar, arah sistematis, variansi terjelaskan).",
             "Visual diagnostik: peta rata-rata error per piksel, kurva error domain-rata terhadap waktu, dan agregat global yang bisa dilog ke MLflow.",
-            "Ini fondasi yang familiar dari F10, diterapkan ke field arus."
+            "Ini fondasi yang familiar dari F10, diterapkan ke field arus.",
+            "RMSE = √(mean (ŷ−y)²) — penalti error besar; paling sering dilaporkan. MAE = mean |ŷ−y| — lebih tahan outlier.",
+            "Bias = mean(y−ŷ): positif = underpredict. R² = 1 − SS_res/SS_tot; RSE = 1−R²."
           ]
         },
         {
@@ -1736,7 +2239,9 @@
             "Selain komponen terpisah, evaluasi arah (direction) dan kekuatan (norm = sqrt(u²+v²)) memberi gambaran integral aliran.",
             "RMSE arah memperhitungkan sifat sudut (wrap-around 360°).",
             "Threshold-based accuracy: apakah magnitude masuk kategori intensitas yang sama dengan observasi (min–max tertentu)?",
-            "Ini selaras prioritas BMKG pada kekuatan arus: kadang “benar kelas intensitas” lebih relevan operasional daripada hanya mengejar error kontinu kecil."
+            "Ini selaras prioritas BMKG pada kekuatan arus: kadang “benar kelas intensitas” lebih relevan operasional daripada hanya mengejar error kontinu kecil.",
+            "Arah: DIR = (90 − atan2(u,v)·180/π) mod 360; RMSE arah harus memperhitungkan wrapping 0°=360°.",
+            "Magnitude NORM = √(u²+v²). Threshold accuracy: apakah intensitas masuk rentang operasional yang sama (berguna untuk warning)."
           ]
         },
         {
@@ -1745,7 +2250,10 @@
             "Lagrangian meninjau lintasan parcel: adveksi partikel pada field observasi vs field prediksi.",
             "NCLS (Normalized Cumulative Lagrangian Separation) mengukur pemisahan kumulatif lintasan, dinormalisasi terhadap panjang lintasan observasi.",
             "UC1 menyiapkan skor pada horizon 3 jam, 6 jam, 12 jam, dan 24 jam.",
-            "Relevan untuk search-and-rescue: kualitas lintasan drift sering lebih bermakna daripada error titik tunggal."
+            "Relevan untuk search-and-rescue: kualitas lintasan drift sering lebih bermakna daripada error titik tunggal.",
+            "NCLS = Σ dᵢ / Σ ℓ₀ᵢ (jarak separasi kumulatif / panjang lintasan observasi). Skill ≈ 1 − NCLS/n jika NCLS < n, else 0.",
+            "Skill 1.0 = lintasan sempurna; 0.0 = error setara toleransi. Biasanya dihitung untuk drift 3h, 6h, 12h, 24h.",
+            "Partikel dari setiap sel grid tiap 10 menit; integrasi Runge–Kutta orde-4 (Parcels). Pasangan yang keluar domain dibuang (batasan interpretasi)."
           ]
         },
         {
@@ -1755,6 +2263,15 @@
             "Contoh di report memakai data dummy (noise) untuk ilustrasi pipeline; output model terlatih akan dipakai kemudian.",
             "Karena Results analysis masih kosong, Anda wajib paham kerangka metrik tanpa mengklaim angka kinerja final.",
             "Praktik baik: laporkan Eulerian dan Lagrangian bersama-sama, plus catatan cakupan spasial partikel yang bertahan."
+          ]
+        },
+        {
+          "heading": "Visualisasi diagnostik",
+          "body": [
+            "Spasial: peta RMSE/bias per pixel, quiver field.",
+            "Temporal: time series prediksi vs truth; error vs lead time.",
+            "Statistik: scatter ŷ vs y; rotary spectra / PSD.",
+            "Training: kurva loss train vs val; histogram skill Lagrangian."
           ]
         }
       ],
@@ -1815,6 +2332,30 @@
             }
           ],
           "correct": "a"
+        },
+        {
+          "id": "sg11",
+          "q": "NCLS Skill Score 0.85 untuk drift 6 jam berarti…",
+          "options": [
+            {
+              "value": "a",
+              "label": "85% nilai arus dalam toleransi"
+            },
+            {
+              "value": "b",
+              "label": "Akurasi arah 85%"
+            },
+            {
+              "value": "c",
+              "label": "Error lintasan partikel ≈ 15% panjang lintasan observasi (dalam skema skill tersebut)"
+            },
+            {
+              "value": "d",
+              "label": "85% lintasan berhasil diprediksi"
+            }
+          ],
+          "correct": "c",
+          "explain": "Skill ≈ 1 − NCLS/n; 0.85 ≈ separasi kumulatif relatif kecil vs panjang lintasan — penting untuk SAR/oil spill."
         }
       ]
     },
@@ -1848,7 +2389,13 @@
             "Dokumen persiapan CLS-M2P3-0394 merencanakan pelatihan kapasitas 21–25 September 2026.",
             "Dua hari bersama: fundamental DL & training behaviour, lalu improving models + experiment tracking (Lightning, Kedro, MLflow).",
             "Tiga hari UC1: Data (ekstraksi/analisis/preprocessing/DataModule) → Model & metrics (ConvLSTM, strategi training, metrik, multimodal) → Production & discussion.",
-            "FT adalah rencana transfer pengetahuan, selaras materi F1–F10 + U1–U12 — bukan sertifikat bahwa Results analysis Issue 3.0 sudah terisi."
+            "FT adalah rencana transfer pengetahuan, selaras materi F1–F10 + U1–U12 — bukan sertifikat bahwa Results analysis Issue 3.0 sudah terisi.",
+            "Alur pengembangan: literature → ekstraksi → analisis → preprocessing → metrik → baseline → model → iterasi → produksi.",
+            "PyTorch Lightning: LightningModule (model+step), Trainer (loop/GPU/log), DataModule (load/split).",
+            "MLflow: log param (lr, hidden, lookback), metric (RMSE), artifact model — bandingkan puluhan eksperimen dengan reproduksibel.",
+            "Kedro: conf/ + nodes/ + pipelines (data_extraction → analysis → preprocessing → baseline → training → evaluation → docker).",
+            "Produksi BMKG: Docker ekstraksi → Docker inferensi ML → Docker ekspor ke MANDALA. Cek: input lengkap, void terisi, forecast up-to-date, performa terkini dalam rentang.",
+            "Output operasional target: U,V 10 menit, ~1 km, Sunda & Lombok — gap-fill + forecast 24 jam."
           ]
         },
         {
@@ -2150,6 +2697,294 @@
         }
       ],
       "correct": "a"
+    },
+    {
+      "id": "cap_sg01",
+      "q": "Tujuan utama UC1 di MMS2 adalah…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Forecast curah hujan dari satelit"
+        },
+        {
+          "value": "b",
+          "label": "Mengisi gap temporal HF Radar + forecast arus hingga ~24 jam"
+        },
+        {
+          "value": "c",
+          "label": "Monitor banjir pesisir dari muka laut"
+        },
+        {
+          "value": "d",
+          "label": "Klasifikasi massa air dari profil suhu"
+        }
+      ],
+      "correct": "b",
+      "explain": "UC1 fokus void-filling arus permukaan HF Radar dan forecast hingga ~24 jam di Sunda & Lombok dengan metodologi ML yang sama."
+    },
+    {
+      "id": "cap_sg02",
+      "q": "Autokorelasi arus HF Radar menunjukkan siklus ~24 jam terutama karena…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Siklus radiasi matahari harian pada SST"
+        },
+        {
+          "value": "b",
+          "label": "Siklus tekanan atmosfer 24 jam saja"
+        },
+        {
+          "value": "c",
+          "label": "Forcing tidal (komponen diurnal / semi-diurnal)"
+        },
+        {
+          "value": "d",
+          "label": "Jadwal monitoring peralatan radar"
+        }
+      ],
+      "correct": "c",
+      "explain": "Sunda cenderung diurnal (~24 jam); Lombok mixed semi-diurnal (~12 jam). Tide adalah input kritis dan alasan lookback ~24 jam."
+    },
+    {
+      "id": "cap_sg03",
+      "q": "Kenapa Z-score lebih dipilih daripada Min–Max di preprocessing UC1?",
+      "options": [
+        {
+          "value": "a",
+          "label": "Z-score selalu menghasilkan nilai 0–1"
+        },
+        {
+          "value": "b",
+          "label": "Lebih tahan outlier & cocok data mendekati normal"
+        },
+        {
+          "value": "c",
+          "label": "Min–Max butuh lebih banyak GPU"
+        },
+        {
+          "value": "d",
+          "label": "Z-score mempertahankan satuan fisik mentah"
+        }
+      ],
+      "correct": "b",
+      "explain": "Z-score memusatkan mean 0 dan variance 1; ekstrem tidak meremas seluruh skala seperti Min–Max. μ,σ hanya dari train."
+    },
+    {
+      "id": "cap_sg04",
+      "q": "Perbedaan kunci LSTM vs ConvLSTM untuk prediksi arus adalah…",
+      "options": [
+        {
+          "value": "a",
+          "label": "LSTM selalu lebih akurat daripada ConvLSTM"
+        },
+        {
+          "value": "b",
+          "label": "LSTM memakai gate; ConvLSTM hanya konvolusi tanpa memori"
+        },
+        {
+          "value": "c",
+          "label": "ConvLSTM mengganti matriks dense di gate dengan konvolusi sehingga struktur spasial terjaga"
+        },
+        {
+          "value": "d",
+          "label": "ConvLSTM hanya untuk time series 1D; LSTM untuk 2D"
+        }
+      ],
+      "correct": "c",
+      "explain": "Flatten di LSTM memutus hubungan tetangga. ConvLSTM menjaga dimensi H×W di hidden state — penting untuk field HF Radar."
+    },
+    {
+      "id": "cap_sg05",
+      "q": "Variabel dengan korelasi tertinggi terhadap DS non-tidal di Lombok (analisis UC1) adalah…",
+      "options": [
+        {
+          "value": "a",
+          "label": "SST"
+        },
+        {
+          "value": "b",
+          "label": "Kecepatan & arah angin"
+        },
+        {
+          "value": "c",
+          "label": "Gradien SSH Laut Jawa vs Samudra Hindia"
+        },
+        {
+          "value": "d",
+          "label": "SSS"
+        }
+      ],
+      "correct": "c",
+      "explain": "R≈0.80 setelah komponen tidal dihilangkan — selaras fisika ITF: gradien tekanan/SSH mendorong aliran melalui Lombok."
+    },
+    {
+      "id": "cap_sg06",
+      "q": "Kenapa random train/val/test berbahaya untuk time series arus?",
+      "options": [
+        {
+          "value": "a",
+          "label": "Random split terlalu mahal komputasi"
+        },
+        {
+          "value": "b",
+          "label": "Observasi masa depan bisa bocor ke train → metrik semu bagus"
+        },
+        {
+          "value": "c",
+          "label": "Resolusi temporal ikut berubah"
+        },
+        {
+          "value": "d",
+          "label": "Butuh lebih banyak langkah preprocessing"
+        }
+      ],
+      "correct": "b",
+      "explain": "Autokorelasi kuat (terutama tide) membuat random split = leakage. UC1 memakai chunk temporal antar musim."
+    },
+    {
+      "id": "cap_sg07",
+      "q": "SHAP +0.5 untuk SSH_gradient pada prediksi DS berarti…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Korelasi SSH–DS = 0.5"
+        },
+        {
+          "value": "b",
+          "label": "Fitur itu mendorong prediksi DS naik ~0.5 unit relatif baseline untuk sampel tersebut"
+        },
+        {
+          "value": "c",
+          "label": "Feature importance global = 50%"
+        },
+        {
+          "value": "d",
+          "label": "Model selalu prediksi 0.5 m/s bila SSH ada"
+        }
+      ],
+      "correct": "b",
+      "explain": "SHAP adalah kontribusi lokal per sampel terhadap prediksi (additive), bukan korelasi global."
+    },
+    {
+      "id": "cap_sg08",
+      "q": "Limitasi utama baseline Analogue/KNN dibanding DL adalah…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Milvus tidak bisa multi-variabel"
+        },
+        {
+          "value": "b",
+          "label": "Rata-rata tetangga menyamarkan ekstrem (smoothing arus kuat/lemah)"
+        },
+        {
+          "value": "c",
+          "label": "KNN wajib retrain tiap data baru"
+        },
+        {
+          "value": "d",
+          "label": "KNN tidak bisa pakai tide"
+        }
+      ],
+      "correct": "b",
+      "explain": "Prediksi = rata-rata berbobot → ekstrem tergerus; region yang kosong di semua tetangga ikut kosong di output."
+    },
+    {
+      "id": "cap_sg09",
+      "q": "Kenapa ambang interpolasi Lombok (50 menit) lebih ketat dari Sunda (80 menit)?",
+      "options": [
+        {
+          "value": "a",
+          "label": "Komputer Lombok lebih cepat"
+        },
+        {
+          "value": "b",
+          "label": "Lebih banyak stasiun radar"
+        },
+        {
+          "value": "c",
+          "label": "Arus Lombok berubah lebih cepat (tide 12 jam + geometri kompleks)"
+        },
+        {
+          "value": "d",
+          "label": "Resolusi spasial Lombok lebih tinggi"
+        }
+      ],
+      "correct": "c",
+      "explain": "Analisis RMSE interpolasi: error Lombok naik tajam setelah ~50 menit karena dinamika lebih cepat/kompleks."
+    },
+    {
+      "id": "cap_sg10",
+      "q": "Beda Iterative vs Auto-regressive untuk forecast panjang…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Iterative = banyak model; AR = satu model"
+        },
+        {
+          "value": "b",
+          "label": "Iterative latih hanya dengan ground truth; AR melatih model menerima prediksinya sendiri"
+        },
+        {
+          "value": "c",
+          "label": "AR selalu lebih cepat dilatih"
+        },
+        {
+          "value": "d",
+          "label": "Iterative butuh lebih banyak VRAM"
+        }
+      ],
+      "correct": "b",
+      "explain": "Iterative: mismatch train/infer. Auto-regressive (+ residual) lebih robust ke akumulasi error di horizon panjang."
+    },
+    {
+      "id": "cap_sg11",
+      "q": "NCLS Skill Score 0.85 untuk drift 6 jam berarti…",
+      "options": [
+        {
+          "value": "a",
+          "label": "85% nilai arus dalam toleransi"
+        },
+        {
+          "value": "b",
+          "label": "Akurasi arah 85%"
+        },
+        {
+          "value": "c",
+          "label": "Error lintasan partikel ≈ 15% panjang lintasan observasi (dalam skema skill tersebut)"
+        },
+        {
+          "value": "d",
+          "label": "85% lintasan berhasil diprediksi"
+        }
+      ],
+      "correct": "c",
+      "explain": "Skill ≈ 1 − NCLS/n; 0.85 ≈ separasi kumulatif relatif kecil vs panjang lintasan — penting untuk SAR/oil spill."
+    },
+    {
+      "id": "cap_sg12",
+      "q": "PSD Sunda puncak 24 jam & Lombok 12 jam sesuai rezim…",
+      "options": [
+        {
+          "value": "a",
+          "label": "Sunda semi-diurnal; Lombok diurnal"
+        },
+        {
+          "value": "b",
+          "label": "Sunda diurnal (K1/O1); Lombok mixed semi-diurnal (M2)"
+        },
+        {
+          "value": "c",
+          "label": "Keduanya sama; beda hanya karena angin"
+        },
+        {
+          "value": "d",
+          "label": "Sunda spring–neap; Lombok semi-diurnal biasa"
+        }
+      ],
+      "correct": "b",
+      "explain": "Cutoff dekomposisi ~72 jam menangkap pita tidal penuh di kedua situs meski frekuensi dominan berbeda."
     }
   ]
 }

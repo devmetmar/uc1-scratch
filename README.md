@@ -2,7 +2,9 @@
 
 Situs belajar interaktif **Fundamental Deep Learning + Proyek UC1** (HF Radar currents, BMKG MMS-2 P3). Bisa di-serve lokal atau di-deploy ke **GitHub Pages**.
 
-Isi kurikulum diekstrak dari Canvas Cursor (`uc1-learning-platform.canvas.tsx`). Progres kuis tersimpan di `localStorage` browser.
+Isi kurikulum di `src/data/curriculum.json` (Fundamental + UC1, diperkaya Study Guide Toulouse). Progres kuis tersimpan di `localStorage` browser.
+
+Study Guide interaktif (EN): setelah deploy → `/study-guide.html` (atau tombol di hero situs).
 
 ## Jalankan lokal
 

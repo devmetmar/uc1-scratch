@@ -47,9 +47,12 @@ function QuizBlock({
               ))}
             </select>
             {submitted && (
-              <p className={ok ? "ok" : "bad"}>
-                {ok ? "Benar" : `Kurang tepat — kunci: ${keyLabel}`}
-              </p>
+              <>
+                <p className={ok ? "ok" : "bad"}>
+                  {ok ? "Benar" : `Kurang tepat — kunci: ${keyLabel}`}
+                </p>
+                {q.explain && <p className="quiz-explain">{q.explain}</p>}
+              </>
             )}
           </div>
         );
@@ -142,7 +145,8 @@ function CapstonePane({
   onAnswer: (qid: string, v: string) => void;
   onSubmit: (passed: boolean) => void;
 }) {
-  const passAt = 8;
+  const total = data.capstone.length;
+  const passAt = Math.ceil(total * (2 / 3));
   const score = data.capstone.reduce(
     (n, q) => n + (answers[q.id] === q.correct ? 1 : 0),
     0
@@ -151,10 +155,10 @@ function CapstonePane({
     <article className="pane">
       <h2>Capstone — Fundamental + UC1</h2>
       <div className="callout warn">
-        <strong>12 soal campuran</strong>
+        <strong>{total} soal campuran</strong>
         <p>
-          Ambang lulus {passAt}/12. Jangan klaim skor model final yang belum ada
-          di Issue 3.0.
+          Ambang lulus {passAt}/{total} (~⅔). Termasuk soal Study Guide Toulouse.
+          Jangan klaim skor model final yang belum ada di Issue 3.0.
         </p>
       </div>
       {data.capstone.map((q, idx) => {
@@ -175,9 +179,12 @@ function CapstonePane({
               ))}
             </select>
             {submitted && (
-              <p className={ok ? "ok" : "bad"}>
-                {ok ? "Benar" : "Kurang tepat"}
-              </p>
+              <>
+                <p className={ok ? "ok" : "bad"}>
+                  {ok ? "Benar" : "Kurang tepat"}
+                </p>
+                {q.explain && <p className="quiz-explain">{q.explain}</p>}
+              </>
             )}
           </div>
         );
@@ -192,7 +199,7 @@ function CapstonePane({
         </button>
         {submitted && (
           <span className="pill">
-            Skor {score}/12
+            Skor {score}/{total}
           </span>
         )}
         {done && <span className="pill ok-pill">Capstone selesai</span>}
@@ -306,6 +313,14 @@ export default function App() {
           >
             Loncat ke silabus
           </button>
+          <a
+            className="btn ghost"
+            href={`${import.meta.env.BASE_URL}study-guide.html`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Study Guide (EN)
+          </a>
         </div>
       </header>
 
