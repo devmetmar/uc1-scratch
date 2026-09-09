@@ -6,6 +6,7 @@
   "scripts": {
     "extract": "node scripts/extract-curriculum.cjs",
     "enrich": "node scripts/enrich-from-study-guide.cjs",
+    "figures": "python scripts/extract_report_figures.py",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",

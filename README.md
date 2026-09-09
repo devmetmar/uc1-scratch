@@ -58,7 +58,9 @@ npx --yes serve dist
 | `src/data/curriculum.json` | Modul F1–F10, U1–U12, capstone |
 | `src/App.tsx` | UI silabus + kuis + progres |
 | `src/components/Illustrations.tsx` | Diagram SVG |
-| `scripts/extract-curriculum.cjs` | Ekstrak dari Canvas |
+| `public/figures/` | Halaman figure dari UC1 Draft Report (Issue 3.0) |
+| `src/components/ReportFigures.tsx` | Galeri figure per modul |
+| `scripts/extract_report_figures.py` | Ekstrak ulang figure dari PDF |
 
 ## Catatan
 

@@ -1,0 +1,602 @@
+{
+  "source": "UC1 – Draft Report, CLS-M2P3-0379-B1-TN, Issue 3.0 – 12/06/2026",
+  "note": "Internal CLS figures for learning use. Rendered from report pages containing figure captions.",
+  "figures": [
+    {
+      "id": "p10",
+      "file": "figures/p10.jpg",
+      "page": 10,
+      "captions": [
+        "Figure 1 – Number of radar data occurrences per pixel in the Sunda strait."
+      ],
+      "modules": [
+        "u02",
+        "u05"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p11",
+      "file": "figures/p11.jpg",
+      "page": 11,
+      "captions": [
+        "Figure 2- Number of radar data occurrences per pixel in the Lombok strait.",
+        "Figure 3 - Radar time series at the pixel with the",
+        "Figure 4 - Radar time lags in the Sunda strait"
+      ],
+      "modules": [
+        "u02",
+        "u05"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p12",
+      "file": "figures/p12.jpg",
+      "page": 12,
+      "captions": [
+        "Figure 5 - Radar time series at the pixel with the",
+        "Figure 6 - Radar time lags in the Lombok strait"
+      ],
+      "modules": [
+        "u02",
+        "u05"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p13",
+      "file": "figures/p13.jpg",
+      "page": 13,
+      "captions": [
+        "Figure 7 - Rose plots of ERA5 wind direction with the bar heights correspond to the percentage in the dataset.",
+        "Figure 8 - Plot of ERA5 winds temporal variance in the dataset with the study area delimited by the red square and the chosen"
+      ],
+      "modules": [
+        "u04",
+        "u05"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p14",
+      "file": "figures/p14.jpg",
+      "page": 14,
+      "captions": [
+        "Figure 9 - Plot of CMEMs Sea Surface Salinity temporal variance in the dataset with the study area delimited by the red square",
+        "Figure 10 - Plot of CMEMs Sea Surface Height temporal variance in the dataset with the study area delimited by the red square,"
+      ],
+      "modules": [
+        "u04",
+        "u05"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p15",
+      "file": "figures/p15.jpg",
+      "page": 15,
+      "captions": [
+        "Figure 11 - Quality flag for tide FES2022 model on both study straits.",
+        "Figure 12 - AWS positions (black crosses) in study straits. The study areas are delimited by the red squares."
+      ],
+      "modules": [
+        "u04",
+        "u05"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p16",
+      "file": "figures/p16.jpg",
+      "page": 16,
+      "captions": [
+        "Figure 13 - Tidal comparison from AWS and FES harmonics during the second study period for stations in Sunda Strait (top)"
+      ],
+      "modules": [
+        "u04",
+        "u05"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p17",
+      "file": "figures/p17.jpg",
+      "page": 17,
+      "captions": [
+        "Figure 14 - Rose plots of radar HF currents on the entire study areas, Sunda on the left and Lombok on the right."
+      ],
+      "modules": [
+        "u03"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p18",
+      "file": "figures/p18.jpg",
+      "page": 18,
+      "captions": [
+        "Figure 15 - Quiver plots of seasonal mean vectors per grid point."
+      ],
+      "modules": [
+        "u03"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p19",
+      "file": "figures/p19.jpg",
+      "page": 19,
+      "captions": [
+        "Figure 16 - The basis rotation applied to the vector field for the downstream and cross-stream decomposition, with the rotation"
+      ],
+      "modules": [
+        "u03"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p20",
+      "file": "figures/p20.jpg",
+      "page": 20,
+      "captions": [
+        "Figure 17 - Distribution of current components cross-stream (cs, left) and down-stream (ds, right) for Sunda strait (left) and",
+        "Figure 18 - Distributions of the SST gridded (left), in one point (middle) and in one point from Ostia (right) for Sunda strait.",
+        "Figure 19 - Distributions of bathymetry before cleaning in Sunda strait (left) and Lombok strait (right)."
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p21",
+      "file": "figures/p21.jpg",
+      "page": 21,
+      "captions": [
+        "Figure 20 - Bathymetry maps in Lombok strait before cleaning (left) and after cleaning (middle). Distribution of bathymetry in",
+        "Figure 21 - Correlation matrices in Sunda strait (left) and Lombok strait (right)."
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p22",
+      "file": "figures/p22.jpg",
+      "page": 22,
+      "captions": [
+        "Figure 22 - Beeswarm plot of SHAP values in Sunda strait."
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p23",
+      "file": "figures/p23.jpg",
+      "page": 23,
+      "captions": [
+        "Figure 23 - Beeswarm plot of SHAP values in Lombok strait."
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p24",
+      "file": "figures/p24.jpg",
+      "page": 24,
+      "captions": [
+        "Figure 24 - Selected points for current decomposition in Sunda strait (left) and Lombok strait (right). The bathymetry is",
+        "Figure 25, with additional plots for other locations in the Appendix D -. Therefore, a cutoff period of 72",
+        "Figure 25 - PSD plots for the South point in Sunda strait (left) and Lombok strait (right) for cross-stream current (top) and"
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p25",
+      "file": "figures/p25.jpg",
+      "page": 25,
+      "captions": [
+        "Figure 26 - Decomposition of cross-stream (top) and downstream (bottom) current signal for the South point of Sunda strait",
+        "Figure 27 - Scatter plots of SSH_gradient versus non-tidal CS (left) and DS (right) components at four selected points in the"
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p26",
+      "file": "figures/p26.jpg",
+      "page": 26,
+      "captions": [
+        "Figure 28 - Scatter plots of wind CS versus non-tidal CS (left) and DS (right) components at four selected points in the Sunda",
+        "Figure 29 - Scatter plots of SST_Ostia versus non-tidal CS (left) and DS (right) components at four selected points in the Sunda"
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p27",
+      "file": "figures/p27.jpg",
+      "page": 27,
+      "captions": [
+        "Figure 30 - Auto-correlation plot of radar HF time series at southern pixel in Sunda strait.",
+        "Figure 31 - Auto-correlation plot of radar HF time series at southern pixel in Lombok strait."
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p28",
+      "file": "figures/p28.jpg",
+      "page": 28,
+      "captions": [
+        "Figure 32 - Cross-correlation of radar HF currents with tides at 10 minutes time resolution.",
+        "Figure 33 - Cross-correlation of hourly radar HF currents with SSH gradient (between Java Sea and Indian Ocean)"
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p29",
+      "file": "figures/p29.jpg",
+      "page": 29,
+      "captions": [
+        "Figure 34 - Process of selecting the best frequency and lookback for current"
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p30",
+      "file": "figures/p30.jpg",
+      "page": 30,
+      "captions": [
+        "Figure 35 - Main spatial patterns of invalid data for Sunda (left) and Lombok (right).",
+        "Figure 36 - Sunda strait: Histogram of small temporal gaps.",
+        "Figure 37 - Lombok strait: Histogram of small temporal gaps."
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p31",
+      "file": "figures/p31.jpg",
+      "page": 31,
+      "captions": [
+        "Figure 38 - Schema of the filling gaps strategy.",
+        "Figure 36 shows that gaps become much less frequent beyond 80 minutes. At the same time, Figures",
+        "Figure 39, Figure 40 and Figure 41 indicate that RMSE remains below 20 cm/s up to this threshold. To"
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p32",
+      "file": "figures/p32.jpg",
+      "page": 32,
+      "captions": [
+        "Figure 39 - Sunda strait: RMSE of current_v for temporal and spatial reconstruction along gap durations (large border gap).",
+        "Figure 40 - Sunda strait: RMSE of current_v for temporal and spatial reconstruction along gap durations (interior gap).",
+        "Figure 41 - Sunda strait: RMSE of current_v for temporal and spatial reconstruction along gap durations (few points gap).",
+        "Figure 42 - Lombok strait: RMSE of current_v for temporal and spatial reconstruction along gap durations (large border gap)."
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p33",
+      "file": "figures/p33.jpg",
+      "page": 33,
+      "captions": [
+        "Figure 43 - Lombok strait: RMSE of current_v for temporal and spatial reconstruction along gap durations (interior gap).",
+        "Figure 44 - Lombok strait: RMSE of current_v for temporal and spatial reconstruction along gap durations (few points gap).",
+        "Figure 45 - Mask with border (Sunda strait on the left and Lombok strait on the right)."
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p34",
+      "file": "figures/p34.jpg",
+      "page": 34,
+      "captions": [
+        "Figure 46 shows that with a maximal NaNs rate of 0.1 (10%) for both the border and the full area, Sunda",
+        "Figure 46 - Sunda strait: cumulative fraction of available data according to proportions of NaNs on the full mask (left) and on",
+        "Figure 47 - Lombok strait: cumulative fraction of available data according to proportions of NaNs on the full mask (left) and on"
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p35",
+      "file": "figures/p35.jpg",
+      "page": 35,
+      "captions": [
+        "Figure 48 – Sunda: examples of reconstruction after time interpolation and after both methods (time interpolation and spatial",
+        "Figure 49 - Lombok: examples of reconstruction after time interpolation and after both methods (time interpolation and spatial",
+        "Figure 48 and Figure 49 show that some pixels can be filled thanks to time interpolation (see “After time"
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p36",
+      "file": "figures/p36.jpg",
+      "page": 36,
+      "captions": [
+        "Figure 50 - Sunda strait: RMSE of the reconstruction with temporal interpolation of u (on the left) and v (on the right) for",
+        "Figure 51 - Lombok strait: RMSE of the reconstruction with temporal interpolation of u (on the left) and v (on the right) for"
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p37",
+      "file": "figures/p37.jpg",
+      "page": 37,
+      "captions": [
+        "Figure 52 - Sunda strait: proportion of valid data after preprocessing.",
+        "Figure 53 - Lombok strait: proportion of valid data after preprocessing.",
+        "Figure 54 - Quantity of valid data against lookback (Sunda strait on the left and Lombok strait on the right)."
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p38",
+      "file": "figures/p38.jpg",
+      "page": 38,
+      "captions": [
+        "Figure 55 - Temporal partitioning of training, validation, and test data sets."
+      ],
+      "modules": [
+        "u07"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p41",
+      "file": "figures/p41.jpg",
+      "page": 41,
+      "captions": [
+        "Figure 56 - Illustration of the separation distances (d1, d2, d3) between modelled (blue) and observed (black) endpoints of"
+      ],
+      "modules": [
+        "u11"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p42",
+      "file": "figures/p42.jpg",
+      "page": 42,
+      "captions": [
+        "Figure 57 - Examples of particle pairs difference of trajectories, on a simulation on the Sunda Strait. On the left, the particles"
+      ],
+      "modules": [
+        "u11"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p43",
+      "file": "figures/p43.jpg",
+      "page": 43,
+      "captions": [
+        "Figure 58 - Example of the score histograms of the 4 Lagrangian metrics: NCLS Skill Score (3 h), NCLS Skill Score (6 h), NCLS"
+      ],
+      "modules": [
+        "u11"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p44",
+      "file": "figures/p44.jpg",
+      "page": 44,
+      "captions": [
+        "Figure 59 - Cumulative spatial density of the particle pairs on the Sunda Strait the 05/04/2023. The top left subfigure only",
+        "Figure 59 illustrates how the spatial distribution of surviving particle pairs becomes more concentrated"
+      ],
+      "modules": [
+        "u11"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p45",
+      "file": "figures/p45.jpg",
+      "page": 45,
+      "captions": [
+        "Figure 60 - Selected points for Sunda strait (left) and Lombok strait (right)."
+      ],
+      "modules": [
+        "u08"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p46",
+      "file": "figures/p46.jpg",
+      "page": 46,
+      "captions": [
+        "Figure 61 - Database construction with Milvus.",
+        "Figure 62 - Milvus Hybrid Search."
+      ],
+      "modules": [
+        "u08"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p47",
+      "file": "figures/p47.jpg",
+      "page": 47,
+      "captions": [
+        "Figure 63 - Milvus Weight Ranker.",
+        "Figure 64 - Sunda strait: RMSE plots on current u (left) and current v (right).",
+        "Figure 65 - Lombok strait: RMSE plots on current u (left) and current v (right)."
+      ],
+      "modules": [
+        "u08"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p48",
+      "file": "figures/p48.jpg",
+      "page": 48,
+      "captions": [
+        "Figure 66 - LSTM Cell.",
+        "Figure 67 - LSTM model."
+      ],
+      "modules": [
+        "f08",
+        "f09",
+        "u09"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p49",
+      "file": "figures/p49.jpg",
+      "page": 49,
+      "captions": [
+        "Figure 69 - ConvLSTM model.",
+        "Figure 68 - ConvLSTM Cell and memory passing."
+      ],
+      "modules": [
+        "f08",
+        "f09",
+        "u09"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p50",
+      "file": "figures/p50.jpg",
+      "page": 50,
+      "captions": [
+        "Figure 70 - Temporal attention module.",
+        "Figure 71 - ConvLSTM with Temporal attention model."
+      ],
+      "modules": [
+        "f08",
+        "f09",
+        "u09"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p51",
+      "file": "figures/p51.jpg",
+      "page": 51,
+      "captions": [
+        "Figure 72 - One pass models diagram"
+      ],
+      "modules": [
+        "f10",
+        "u10"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p52",
+      "file": "figures/p52.jpg",
+      "page": 52,
+      "captions": [
+        "Figure 73 - Iterative model diagram",
+        "Figure 74 – Auto-regressive models diagram"
+      ],
+      "modules": [
+        "f10",
+        "u10"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p53",
+      "file": "figures/p53.jpg",
+      "page": 53,
+      "captions": [
+        "Figure 75 - Difference of concept between classical learning and residual learning."
+      ],
+      "modules": [
+        "f10",
+        "u10"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p67",
+      "file": "figures/p67.jpg",
+      "page": 67,
+      "captions": [
+        "Figure 76 - Auto-correlation plot of radar HF time series at north, east and west pixel in Sunda strait"
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p68",
+      "file": "figures/p68.jpg",
+      "page": 68,
+      "captions": [
+        "Figure 77 - Auto-correlation plot of radar HF time series at north, east and west pixel in Lombok strait"
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    },
+    {
+      "id": "p69",
+      "file": "figures/p69.jpg",
+      "page": 69,
+      "captions": [
+        "Figure 78 - Cross-correlation of hourly radar HF currents with hourly wind components at chosen single pixel",
+        "Figure 79 - Cross-correlation of hourly radar HF currents with daily SST from Ostia satellite"
+      ],
+      "modules": [
+        "u06"
+      ],
+      "source": "UC1 Draft Report Issue 3.0 (CLS-M2P3-0379-B1-TN)"
+    }
+  ]
+}

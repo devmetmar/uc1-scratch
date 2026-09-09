@@ -3,6 +3,7 @@ import curriculum from "./data/curriculum.json";
 import type { Curriculum, ModuleDef, QuizItem } from "./types";
 import { useProgress } from "./hooks/useProgress";
 import { ModuleIllustration } from "./components/Illustrations";
+import { ReportFigures } from "./components/ReportFigures";
 import "./App.css";
 
 const data = curriculum as Curriculum;
@@ -101,6 +102,7 @@ function ModulePane({
         <p>{mod.goal}</p>
       </div>
       <ModuleIllustration id={mod.id} />
+      <ReportFigures moduleId={mod.id} />
       {mod.sections.map((s) => (
         <details key={s.heading} className="section" open>
           <summary>{s.heading}</summary>
